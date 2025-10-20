@@ -43,8 +43,8 @@ export const PATTERNS = {
 
 // Configurações de processamento
 export const RECURSIVE_SEARCH: boolean = true; // Buscar em subdiretórios
-export const COPY_FILES: boolean = true; // true para copiar, false para mover
-export const DRY_RUN: boolean = false; // true para simular sem fazer alterações
+export const COPY_FILES: boolean = false; // true para copiar, false para mover
+export const DRY_RUN: boolean = true; // true para simular sem fazer alterações
 export const LOG_LEVEL: "debug" | "info" | "warn" | "error" = "info"; // "debug", "info", "warn", "error"
 
 // Contadores para sequência de arquivos adicionais

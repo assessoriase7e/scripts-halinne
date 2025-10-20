@@ -8,7 +8,7 @@ import {
   COUNTERS,
   COPY_FILES,
   DRY_RUN,
-} from "../src/rename-config";
+} from "./rename-config";
 import {
   log,
   extractCode,
@@ -129,6 +129,27 @@ async function main(): Promise<void> {
         // Criar caminho de destino
         const destFolder = path.join(OUTPUT_DIR, code);
         const destPath = path.join(destFolder, newFileName);
+
+        // Verificar se o arquivo de destino já existe
+        try {
+          await fs.access(destPath);
+          log(
+            "info",
+            `   ⚠️ Arquivo de destino já existe, pulando: ${newFileName}`
+          );
+          processedFiles.push({
+            ...imageInfo,
+            success: false,
+            error: "Arquivo de destino já existe",
+            code,
+            imageType,
+            newFileName,
+            destinationPath: destPath,
+          });
+          continue;
+        } catch (error) {
+          // Arquivo não existe, podemos prosseguir
+        }
 
         // Mover/copiar arquivo
         await moveFile(imageInfo.filePath, destPath, COPY_FILES);
