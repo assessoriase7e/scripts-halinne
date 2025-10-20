@@ -102,17 +102,22 @@ export function generateNewFileName(
 
   switch (imageType) {
     case "MAIN_IMAGE":
-      // Verificar se o arquivo contém "generated" no nome ou caminho
-      if (
-        lowerFileName.includes("generated") ||
-        lowerFilePath.includes("generated")
-      ) {
-        return `${code} - P${ext}`;
+      // Primeira imagem principal usa apenas o código, demais usam contador
+      if (!counters.mainImage[code]) {
+        counters.mainImage[code] = 0;
+        return `${code}${ext}`;
       }
-      return `${code}${ext}`;
+      const mainNumber = ++counters.mainImage[code];
+      return `${code} - ${mainNumber}${ext}`;
 
     case "PRODUCT_ON_STONE":
-      return `${code} - P${ext}`;
+      // Primeira imagem na pedra usa código - P, demais usam contador
+      if (!counters.productOnStone[code]) {
+        counters.productOnStone[code] = 0;
+        return `${code} - P${ext}`;
+      }
+      const stoneNumber = ++counters.productOnStone[code];
+      return `${code} - P - ${stoneNumber}${ext}`;
 
     case "ADDITIONAL_PHOTO":
       // Inicializar contador para este código se não existir

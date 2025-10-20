@@ -38,19 +38,32 @@ export const PATTERNS = {
     pink: "rosa",
     roxo: "roxo",
     purple: "roxo",
+    laranja: "laranja",
+    orange: "laranja",
+    marrom: "marrom",
+    brown: "marrom",
+    cinza: "cinza",
+    gray: "cinza",
+    grey: "cinza",
+    "ouro branco": "ouro-branco",
+    "white gold": "ouro-branco",
+    "ouro rose": "ouro-rose",
+    "rose gold": "ouro-rose",
   },
 };
 
 // Configurações de processamento
 export const RECURSIVE_SEARCH: boolean = true; // Buscar em subdiretórios
 export const COPY_FILES: boolean = false; // true para copiar, false para mover
-export const DRY_RUN: boolean = true; // true para simular sem fazer alterações
+export const DRY_RUN: boolean = false; // true para simular sem fazer alterações
 export const LOG_LEVEL: "debug" | "info" | "warn" | "error" = "info"; // "debug", "info", "warn", "error"
 export const KEEP_MOTHER_FOLDER: boolean = true; // true para manter estrutura da pasta mãe no destino
 
-// Contadores para sequência de arquivos adicionais
+// Contadores para sequência de arquivos
 export const COUNTERS = {
-  additional: {} as Record<string, number>, // Contador por código
+  additional: {} as Record<string, number>, // Contador por código para fotos adicionais
+  mainImage: {} as Record<string, number>, // Contador por código para imagens principais
+  productOnStone: {} as Record<string, number>, // Contador por código para produtos na pedra
   initialized: false,
 };
 

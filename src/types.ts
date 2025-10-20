@@ -80,6 +80,8 @@ export interface CacheEntry {
 
 export interface Counters {
   additional: Record<string, number>;
+  mainImage: Record<string, number>;
+  productOnStone: Record<string, number>;
   initialized: boolean;
 }
 
@@ -100,6 +102,7 @@ export interface Config {
   RECURSIVE_SEARCH: boolean;
   KEEP_ORIGINAL_NAMES: boolean;
   MOTHER_FOLDER: string;
+  KEEP_MOTHER_FOLDER: boolean;
 }
 
 export interface RenameConfig {

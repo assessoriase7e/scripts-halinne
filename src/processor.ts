@@ -12,6 +12,7 @@ import {
   MIN_SIMILARITY,
   MAX_CONCURRENT_REQUESTS,
   KEEP_ORIGINAL_NAMES,
+  KEEP_MOTHER_FOLDER,
 } from "../match-images/match-config.js";
 import { cosineSimilarity } from "./imageProcessor.js";
 import { verifySimilarity } from "./openaiAPI.js";
@@ -194,7 +195,8 @@ export async function compareAndGroup(
           const destinationName = generateDestinationName(
             dataW.imageInfo,
             MOTHER_FOLDER,
-            KEEP_ORIGINAL_NAMES
+            KEEP_ORIGINAL_NAMES,
+            KEEP_MOTHER_FOLDER
           );
           const folderPath = path.join(PATH_OUT, destinationName);
           await fs.mkdir(folderPath, { recursive: true });

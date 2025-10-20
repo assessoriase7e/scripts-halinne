@@ -2,17 +2,53 @@ import { apiLimiter } from "./concurrency.js";
 import { optimizeImage } from "./imageProcessor.js";
 import { API_KEY } from "./shared-config.js";
 import { ImageAnalysis } from "./types.js";
+import { EmbeddingCache, getFileHash } from "./cache.js";
 import OpenAI from "openai";
 
 const client = new OpenAI({ apiKey: API_KEY });
 
+// Cache em memória para análises de tipo de imagem
+const typeAnalysisCache = new Map<string, ImageAnalysis>();
+
 /**
- * Analisa uma imagem e identifica seu tipo usando IA
+ * Analisa uma imagem e identifica seu tipo usando IA com cache
  */
 export async function analyzeImageType(
   imagePath: string,
-  fileName: string
+  fileName: string,
+  cache?: EmbeddingCache
 ): Promise<ImageAnalysis> {
+  // Gerar chave de cache baseada no hash do arquivo
+  const fileHash = await getFileHash(imagePath);
+  const cacheKey = fileHash ? `${fileName}-${fileHash}` : fileName;
+  
+  // Verificar cache em memória primeiro
+  if (typeAnalysisCache.has(cacheKey)) {
+    console.log(`    🎯 Cache hit (tipo): ${fileName}`);
+    return typeAnalysisCache.get(cacheKey)!;
+  }
+  
+  // Verificar cache SQLite se disponível
+  if (cache && fileHash) {
+    try {
+      const cached = await cache.get(imagePath);
+      if (cached && cached.analysis) {
+        // Tentar parsear a análise como ImageAnalysis
+        try {
+          const parsed = JSON.parse(cached.analysis);
+          if (parsed.type) {
+            console.log(`    🎯 Cache hit SQLite (tipo): ${fileName}`);
+            typeAnalysisCache.set(cacheKey, parsed);
+            return parsed as ImageAnalysis;
+          }
+        } catch {
+          // Se não for JSON válido, continuar com análise nova
+        }
+      }
+    } catch (error) {
+      console.log(`    ⚠️ Erro ao buscar cache: ${(error as Error).message}`);
+    }
+  }
   return apiLimiter.execute(async () => {
     try {
       const base64Image = await optimizeImage(imagePath);
@@ -36,10 +72,12 @@ export async function analyzeImageType(
             - "reasoning": breve explicação da sua classificação
             
             Categorias:
-            - MAIN_IMAGE: Imagem principal da joia em fundo branco, sem variações
+            - MAIN_IMAGE: Imagem principal da joia em fundo branco, sem variações de cor ou material
             - PRODUCT_ON_STONE: Imagem mostrando a joia posicionada sobre uma pedra ou com elemento "nano"
-            - ADDITIONAL_PHOTO: Foto adicional da mesma joia, talvez em ângulo diferente
-            - VARIANT: Mesma joia mas com variação de cor ou outra característica
+            - ADDITIONAL_PHOTO: Foto adicional da mesma joia no mesmo material/cor, apenas em ângulo diferente ou contexto diferente (ex: na mão)
+            - VARIANT: Mesma joia mas em COR DIFERENTE ou MATERIAL DIFERENTE (ex: ouro amarelo vs ouro branco, pedra vermelha vs azul). 
+              Se a joia tem uma cor/material visivelmente diferente do padrão dourado/amarelo, classifique como VARIANT.
+              Identifique a cor/material específico (vermelho, azul, verde, prata, ouro branco, etc.)
             
             O código do produto é: ${code}`,
           },
@@ -109,6 +147,17 @@ export async function analyzeImageType(
             pink: "rosa",
             roxo: "roxo",
             purple: "roxo",
+            laranja: "laranja",
+            orange: "laranja",
+            marrom: "marrom",
+            brown: "marrom",
+            cinza: "cinza",
+            gray: "cinza",
+            grey: "cinza",
+            "ouro branco": "ouro-branco",
+            "white gold": "ouro-branco",
+            "ouro rose": "ouro-rose",
+            "rose gold": "ouro-rose",
           };
 
           for (const [key, value] of Object.entries(colorMap)) {
@@ -124,6 +173,18 @@ export async function analyzeImageType(
         }
       }
 
+      // Salvar no cache em memória
+      typeAnalysisCache.set(cacheKey, result as ImageAnalysis);
+      
+      // Salvar no cache SQLite se disponível
+      if (cache && fileHash) {
+        try {
+          await cache.set(imagePath, JSON.stringify(result), []);
+        } catch (error) {
+          console.log(`    ⚠️ Erro ao salvar no cache: ${(error as Error).message}`);
+        }
+      }
+      
       return result as ImageAnalysis;
     } catch (error) {
       console.error(
@@ -181,6 +242,17 @@ export async function analyzeImageType(
         pink: "rosa",
         roxo: "roxo",
         purple: "roxo",
+        laranja: "laranja",
+        orange: "laranja",
+        marrom: "marrom",
+        brown: "marrom",
+        cinza: "cinza",
+        gray: "cinza",
+        grey: "cinza",
+        "ouro branco": "ouro-branco",
+        "white gold": "ouro-branco",
+        "ouro rose": "ouro-rose",
+        "rose gold": "ouro-rose",
       };
 
       for (const [key, value] of Object.entries(colorMap)) {
@@ -196,11 +268,16 @@ export async function analyzeImageType(
       }
 
       // Padrão: imagem principal
-      return {
-        type: "MAIN_IMAGE",
+      const fallbackResult = {
+        type: "MAIN_IMAGE" as const,
         confidence: 0.5,
         reasoning: "Classificação fallback padrão",
       };
+      
+      // Salvar fallback no cache em memória
+      typeAnalysisCache.set(cacheKey, fallbackResult);
+      
+      return fallbackResult;
     }
   });
 }

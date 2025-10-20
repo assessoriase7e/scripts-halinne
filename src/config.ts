@@ -38,4 +38,5 @@ export const config: Config = {
   RECURSIVE_SEARCH,
   KEEP_ORIGINAL_NAMES,
   MOTHER_FOLDER,
+  KEEP_MOTHER_FOLDER: true,
 };

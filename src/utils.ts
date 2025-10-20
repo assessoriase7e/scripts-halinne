@@ -96,11 +96,21 @@ export function delay(ms: number): Promise<void> {
 export function generateDestinationName(
   imageInfo: ImageInfo,
   motherFolder: string,
-  keepOriginalNames: boolean = false
+  keepOriginalNames: boolean = false,
+  keepMotherFolder: boolean = false
 ): string {
   if (keepOriginalNames) {
     // Manter estrutura original de pastas
-    return path.dirname(imageInfo.relativePath) || "root";
+    const relativePath = path.dirname(imageInfo.relativePath) || "root";
+    
+    if (keepMotherFolder) {
+      // Preservar toda a estrutura incluindo pasta mãe
+      return relativePath;
+    } else {
+      // Remover a pasta mãe, manter apenas subpastas
+      const parts = relativePath.split(path.sep);
+      return parts.length > 1 ? parts.slice(1).join(path.sep) : relativePath;
+    }
   } else {
     // Usar nome base do arquivo (comportamento original)
     return path.parse(imageInfo.fileName).name;
