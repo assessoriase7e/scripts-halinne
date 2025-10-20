@@ -1,9 +1,9 @@
 import fs from "fs/promises";
 import fsSync from "fs";
 import path from "path";
-import { COPY_FILES, RECURSIVE_SEARCH } from "./shared-config";
-import { ImageInfo, CacheEntry } from "./types";
-import { EmbeddingCache } from "./cache";
+import { COPY_FILES, RECURSIVE_SEARCH } from "./shared-config.js";
+import { ImageInfo, CacheEntry } from "./types.js";
+import { EmbeddingCache } from "./cache.js";
 
 /**
  * Move ou copia um arquivo de forma assíncrona
@@ -115,8 +115,8 @@ export async function getImageEmbedding(
   cache: EmbeddingCache | null = null
 ): Promise<CacheEntry> {
   // Importar dinamicamente para evitar dependência circular
-  const { analyzeImage } = await import("./openaiAPI");
-  const { getTextEmbedding } = await import("./openaiAPI");
+  const { analyzeImage } = await import("./openaiAPI.js");
+  const { getTextEmbedding } = await import("./openaiAPI.js");
 
   console.log(`  🔍 Analisando visualmente...`);
 

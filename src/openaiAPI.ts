@@ -1,7 +1,7 @@
 import OpenAI from "openai";
-import { API_KEY, MIN_SIMILARITY } from "./shared-config";
-import { apiLimiter } from "./concurrency";
-import { optimizeImage } from "./imageProcessor";
+import { API_KEY, MIN_SIMILARITY } from "./shared-config.js";
+import { apiLimiter } from "./concurrency.js";
+import { optimizeImage } from "./imageProcessor.js";
 
 const client = new OpenAI({ apiKey: API_KEY });
 

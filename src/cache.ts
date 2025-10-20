@@ -2,8 +2,8 @@ import fs from "fs/promises";
 import sqlite3 from "sqlite3";
 import path from "path";
 import { fileURLToPath } from "url";
-import { CACHE_DB } from "./shared-config";
-import { CacheEntry } from "./types";
+import { CACHE_DB } from "./shared-config.js";
+import { CacheEntry } from "./types.js";
 
 // Configuração do banco de dados SQLite para cache
 const __filename = fileURLToPath(import.meta.url);
@@ -45,6 +45,8 @@ export function initDatabase(): Promise<sqlite3.Database> {
         file_hash TEXT NOT NULL,
         analysis TEXT NOT NULL,
         embedding TEXT NOT NULL,
+        original_file_name TEXT,
+        original_file_path TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         UNIQUE(file_name, file_hash)
@@ -109,11 +111,56 @@ export class EmbeddingCache {
     }
   }
 
+  // Buscar embedding do cache usando o nome original do arquivo
+  async getByOriginalPath(
+    originalFilePath: string
+  ): Promise<CacheEntry | null> {
+    try {
+      const originalFileName = path.basename(originalFilePath);
+
+      return new Promise((resolve, reject) => {
+        this.db.get(
+          "SELECT analysis, embedding FROM image_cache WHERE original_file_name = ? OR original_file_path = ?",
+          [originalFileName, originalFilePath],
+          (err, row: any) => {
+            if (err) {
+              reject(err);
+              return;
+            }
+
+            if (row) {
+              console.log(
+                `    🎯 Cache hit por nome original: ${originalFileName}`
+              );
+              resolve({
+                analysis: row.analysis,
+                embedding: JSON.parse(row.embedding),
+              });
+            } else {
+              console.log(
+                `    💾 Cache miss por nome original: ${originalFileName}`
+              );
+              resolve(null);
+            }
+          }
+        );
+      });
+    } catch (error) {
+      console.error(
+        `❌ Erro ao buscar do cache por nome original: ${
+          (error as Error).message
+        }`
+      );
+      return null;
+    }
+  }
+
   // Salvar embedding no cache usando o nome do arquivo
   async set(
     filePath: string,
     analysis: string,
-    embedding: number[]
+    embedding: number[],
+    originalFilePath?: string
   ): Promise<number> {
     return new Promise((resolve, reject) => {
       const fileName = path.basename(filePath);
@@ -126,17 +173,32 @@ export class EmbeddingCache {
       fileHash
         .then((hash) => {
           const embeddingJson = JSON.stringify(embedding);
+          const originalFileName = originalFilePath
+            ? path.basename(originalFilePath)
+            : null;
 
           this.db.run(
-            `INSERT OR REPLACE INTO image_cache (file_name, file_path, file_hash, analysis, embedding, updated_at)
-           VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
-            [fileName, filePath, hash, analysis, embeddingJson],
+            `INSERT OR REPLACE INTO image_cache (file_name, file_path, file_hash, analysis, embedding, original_file_name, original_file_path, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
+            [
+              fileName,
+              filePath,
+              hash,
+              analysis,
+              embeddingJson,
+              originalFileName,
+              originalFilePath,
+            ],
             function (err) {
               if (err) {
                 reject(err);
                 return;
               }
-              console.log(`    💾 Cache salvo: ${fileName}`);
+              console.log(
+                `    💾 Cache salvo: ${fileName}${
+                  originalFileName ? ` (original: ${originalFileName})` : ""
+                }`
+              );
               resolve(this.lastID);
             }
           );

@@ -1,10 +1,10 @@
 import fs from "fs/promises";
 import fsSync from "fs";
 import path from "path";
-import { CACHE_DB } from "./shared-config";
-import { initDatabase, EmbeddingCache, getFileHash } from "./cache";
-import { getImageEmbedding } from "./utils";
-import { ProcessedImage } from "./types";
+import { CACHE_DB } from "./shared-config.js";
+import { initDatabase, EmbeddingCache, getFileHash } from "./cache.js";
+import { getImageEmbedding } from "./utils.js";
+import { ProcessedImage } from "./types.js";
 
 /**
  * Atualiza o cache de embeddings com os novos nomes dos arquivos
@@ -44,31 +44,56 @@ export async function updateCacheWithNewNames(
         const cached = await cache.get(oldPath);
 
         if (cached) {
-          // Salvar no cache com o novo nome
-          await cache.set(newPath, cached.analysis, cached.embedding);
-          console.log(`   ✅ Cache atualizado para: ${path.basename(newPath)}`);
+          // Salvar no cache com o novo nome, mantendo referência ao original
+          await cache.set(newPath, cached.analysis, cached.embedding, oldPath);
+          console.log(
+            `   ✅ Cache atualizado para: ${path.basename(
+              newPath
+            )} (original: ${path.basename(oldPath)})`
+          );
           updatedCount++;
         } else {
-          // Se não existe no cache, tentar gerar embedding
-          console.log(
-            `   📝 Gerando embedding para: ${path.basename(newPath)}`
-          );
-          try {
-            const { embedding, analysis } = await getImageEmbedding(
+          // Tentar buscar pelo nome original no cache (caso já tenha sido movido anteriormente)
+          const cachedByOriginal = await cache.getByOriginalPath(oldPath);
+
+          if (cachedByOriginal) {
+            // Salvar no cache com o novo nome, mantendo referência ao original
+            await cache.set(
               newPath,
-              cache
+              cachedByOriginal.analysis,
+              cachedByOriginal.embedding,
+              oldPath
             );
             console.log(
-              `   ✅ Embedding gerado e cacheado para: ${path.basename(
+              `   ✅ Cache encontrado por nome original e atualizado para: ${path.basename(
                 newPath
-              )}`
+              )} (original: ${path.basename(oldPath)})`
             );
             updatedCount++;
-          } catch (error) {
+          } else {
+            // Se não existe no cache, tentar gerar embedding
             console.log(
-              `   ⚠️ Erro ao gerar embedding: ${(error as Error).message}`
+              `   📝 Gerando embedding para: ${path.basename(newPath)}`
             );
-            errorCount++;
+            try {
+              const { embedding, analysis } = await getImageEmbedding(
+                newPath,
+                cache
+              );
+              // Salvar no cache com o novo nome e referência ao original
+              await cache.set(newPath, analysis, embedding, oldPath);
+              console.log(
+                `   ✅ Embedding gerado e cacheado para: ${path.basename(
+                  newPath
+                )} (original: ${path.basename(oldPath)})`
+              );
+              updatedCount++;
+            } catch (error) {
+              console.log(
+                `   ⚠️ Erro ao gerar embedding: ${(error as Error).message}`
+              );
+              errorCount++;
+            }
           }
         }
       } catch (error) {

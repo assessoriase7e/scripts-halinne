@@ -1,5 +1,5 @@
 // Configurações do aplicativo
-import { Config } from "./types";
+import { Config } from "./types.js";
 
 export const API_KEY: string = process.env.OPENAI_API_KEY || "";
 

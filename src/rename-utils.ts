@@ -1,14 +1,14 @@
 import fs from "fs/promises";
 import fsSync from "fs";
 import path from "path";
-import { PATTERNS, COPY_FILES, DRY_RUN, LOG_LEVEL } from "./rename-config";
+import { PATTERNS, COPY_FILES, DRY_RUN, LOG_LEVEL } from "./rename-config.js";
 import {
   ImageInfo,
   ProcessedImage,
   ImageType,
   Counters,
   ReportData,
-} from "./types";
+} from "./types.js";
 
 /**
  * Função de log personalizada
@@ -97,9 +97,18 @@ export function generateNewFileName(
   counters: Counters
 ): string {
   const ext = path.extname(fileName);
+  const lowerFileName = fileName.toLowerCase();
+  const lowerFilePath = filePath.toLowerCase();
 
   switch (imageType) {
     case "MAIN_IMAGE":
+      // Verificar se o arquivo contém "generated" no nome ou caminho
+      if (
+        lowerFileName.includes("generated") ||
+        lowerFilePath.includes("generated")
+      ) {
+        return `${code} - P${ext}`;
+      }
       return `${code}${ext}`;
 
     case "PRODUCT_ON_STONE":

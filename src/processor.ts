@@ -12,21 +12,21 @@ import {
   MIN_SIMILARITY,
   MAX_CONCURRENT_REQUESTS,
   KEEP_ORIGINAL_NAMES,
-} from "../match-images/match-config";
-import { cosineSimilarity } from "./imageProcessor";
-import { verifySimilarity } from "./openaiAPI";
+} from "../match-images/match-config.js";
+import { cosineSimilarity } from "./imageProcessor.js";
+import { verifySimilarity } from "./openaiAPI.js";
 import {
   moveFile,
   listImageFiles,
   generateDestinationName,
   getImageEmbedding,
-} from "./utils";
+} from "./utils.js";
 import {
   ImageInfo,
   EmbeddingData,
   ComparisonResult,
   ProcessingStats,
-} from "./types";
+} from "./types.js";
 
 /**
  * Processa imagens de uma pasta e gera embeddings

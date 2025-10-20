@@ -1,5 +1,5 @@
 // Configurações para o script de renomeamento de imagens
-import { RenameConfig } from "./types";
+import { RenameConfig } from "./types.js";
 
 // Diretórios
 export const INPUT_DIR: string = "rename-images/images"; // Diretório com as imagens a serem renomeadas
@@ -46,6 +46,7 @@ export const RECURSIVE_SEARCH: boolean = true; // Buscar em subdiretórios
 export const COPY_FILES: boolean = false; // true para copiar, false para mover
 export const DRY_RUN: boolean = true; // true para simular sem fazer alterações
 export const LOG_LEVEL: "debug" | "info" | "warn" | "error" = "info"; // "debug", "info", "warn", "error"
+export const KEEP_MOTHER_FOLDER: boolean = true; // true para manter estrutura da pasta mãe no destino
 
 // Contadores para sequência de arquivos adicionais
 export const COUNTERS = {
@@ -61,6 +62,7 @@ export const renameConfig: RenameConfig = {
   COPY_FILES,
   DRY_RUN,
   LOG_LEVEL,
+  KEEP_MOTHER_FOLDER,
   COUNTERS,
   PATTERNS,
 };

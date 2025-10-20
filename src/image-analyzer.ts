@@ -1,7 +1,7 @@
-import { apiLimiter } from "./concurrency";
-import { optimizeImage } from "./imageProcessor";
-import { API_KEY } from "./shared-config";
-import { ImageAnalysis } from "./types";
+import { apiLimiter } from "./concurrency.js";
+import { optimizeImage } from "./imageProcessor.js";
+import { API_KEY } from "./shared-config.js";
+import { ImageAnalysis } from "./types.js";
 import OpenAI from "openai";
 
 const client = new OpenAI({ apiKey: API_KEY });
