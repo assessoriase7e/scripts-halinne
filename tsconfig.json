@@ -16,8 +16,7 @@
     "sourceMap": true,
     "resolveJsonModule": true,
     "types": ["node"],
-    "allowImportingTsExtensions": true,
-    "noEmit": true
+    "noEmit": false
   },
   "include": ["src/**/*", "match-images/**/*", "rename-images/**/*"],
   "exclude": ["node_modules", "dist", "**/*.js"],

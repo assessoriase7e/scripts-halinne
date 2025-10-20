@@ -8,7 +8,8 @@
     "match": "tsc && node dist/match-images/match-images.js",
     "rename": "tsc && node dist/rename-images/rename-images.js",
     "build": "tsc",
-    "build:watch": "tsc --watch"
+    "build:watch": "tsc --watch",
+    "add-js-ext": "ts-node add-js-extensions.ts"
   },
   "keywords": [
     "image",
