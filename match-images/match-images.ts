@@ -11,6 +11,7 @@ import {
   RECURSIVE_SEARCH,
   KEEP_ORIGINAL_NAMES,
   MOTHER_FOLDER,
+  KEEP_MOTHER_FOLDER,
 } from "./match-config.js";
 import { initDatabase, EmbeddingCache } from "../src/cache.js";
 import {
@@ -45,6 +46,9 @@ async function main(): Promise<void> {
     console.log(`   - Busca recursiva: ${RECURSIVE_SEARCH ? "Sim" : "Não"}`);
     console.log(
       `   - Manter nomes originais: ${KEEP_ORIGINAL_NAMES ? "Sim" : "Não"}`
+    );
+    console.log(
+      `   - Manter pasta mãe: ${KEEP_MOTHER_FOLDER ? "Sim" : "Não"}`
     );
     console.log(`   - Pasta mãe: ${MOTHER_FOLDER}\n`);
 

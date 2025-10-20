@@ -21,6 +21,7 @@ export const TOP_N: number = 5; // quantas correspondências pegar em cada image
 // Configurações específicas do match-images
 export const KEEP_ORIGINAL_NAMES: boolean = true; // true para manter nomes originais das pastas de destino
 export const MOTHER_FOLDER: string = PATH_BRANCO; // pasta "mãe" de onde sairão os nomes para as pastas de destino
+export const KEEP_MOTHER_FOLDER: boolean = true; // true para preservar estrutura da pasta mãe no destino
 
 // Re-exportar configurações compartilhadas para uso no script
 export {
@@ -51,4 +52,5 @@ export const matchConfig: Config = {
   RECURSIVE_SEARCH,
   KEEP_ORIGINAL_NAMES,
   MOTHER_FOLDER,
+  KEEP_MOTHER_FOLDER,
 };
