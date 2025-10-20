@@ -1,0 +1,1 @@
+{"version":3,"file":"concurrency.d.ts","sourceRoot":"","sources":["../../src/concurrency.ts"],"names":[],"mappings":"AAIA,qBAAa,kBAAkB;IAC7B,OAAO,CAAC,aAAa,CAAS;IAC9B,OAAO,CAAC,YAAY,CAAa;IACjC,OAAO,CAAC,KAAK,CAAmB;gBAEpB,aAAa,GAAE,MAAgC;IAIrD,OAAO,CAAC,CAAC,EAAE,IAAI,EAAE,MAAM,OAAO,CAAC,CAAC,CAAC,GAAG,OAAO,CAAC,CAAC,CAAC;YAOtC,OAAO;CAmBtB;AAGD,eAAO,MAAM,UAAU,oBAAkD,CAAC"}
