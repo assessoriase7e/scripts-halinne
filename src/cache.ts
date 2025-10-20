@@ -2,6 +2,7 @@ import fs from "fs/promises";
 import sqlite3 from "sqlite3";
 import path from "path";
 import { fileURLToPath } from "url";
+import crypto from "crypto";
 import { CACHE_DB } from "./shared-config.js";
 import { CacheEntry } from "./types.js";
 
@@ -18,6 +19,21 @@ export async function getFileHash(filePath: string): Promise<string | null> {
   } catch (error) {
     console.error(
       `❌ Erro ao obter hash do arquivo: ${(error as Error).message}`
+    );
+    return null;
+  }
+}
+
+// Função para calcular hash SHA256 do conteúdo do arquivo
+export async function getContentHash(filePath: string): Promise<string | null> {
+  try {
+    const fileBuffer = await fs.readFile(filePath);
+    const hashSum = crypto.createHash('sha256');
+    hashSum.update(fileBuffer);
+    return hashSum.digest('hex');
+  } catch (error) {
+    console.error(
+      `❌ Erro ao calcular hash do conteúdo: ${(error as Error).message}`
     );
     return null;
   }
@@ -43,10 +59,14 @@ export function initDatabase(): Promise<sqlite3.Database> {
         file_name TEXT NOT NULL,
         file_path TEXT NOT NULL,
         file_hash TEXT NOT NULL,
+        content_hash TEXT,
+        file_size INTEGER,
         analysis TEXT NOT NULL,
         embedding TEXT NOT NULL,
         original_file_name TEXT,
         original_file_path TEXT,
+        final_file_name TEXT,
+        final_file_path TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         UNIQUE(file_name, file_hash)
@@ -58,8 +78,18 @@ export function initDatabase(): Promise<sqlite3.Database> {
           reject(err);
           return;
         }
-        console.log(`📋 Tabela de cache verificada/criada`);
-        resolve(db);
+        
+        // Criar índice para content_hash para buscas rápidas
+        db.run(
+          `CREATE INDEX IF NOT EXISTS idx_content_hash ON image_cache(content_hash)`,
+          (indexErr) => {
+            if (indexErr) {
+              console.error(`❌ Erro ao criar índice: ${indexErr.message}`);
+            }
+            console.log(`📋 Tabela de cache verificada/criada`);
+            resolve(db);
+          }
+        );
       }
     );
   });
@@ -155,39 +185,93 @@ export class EmbeddingCache {
     }
   }
 
+  // Verificar se existe arquivo duplicado pelo hash de conteúdo
+  async checkDuplicateByContentHash(
+    filePath: string
+  ): Promise<{ isDuplicate: boolean; existingFile?: string; finalFile?: string } | null> {
+    try {
+      const contentHash = await getContentHash(filePath);
+      if (!contentHash) {
+        return null;
+      }
+
+      return new Promise((resolve, reject) => {
+        this.db.get(
+          "SELECT file_name, file_path, final_file_name, final_file_path FROM image_cache WHERE content_hash = ? LIMIT 1",
+          [contentHash],
+          (err, row: any) => {
+            if (err) {
+              reject(err);
+              return;
+            }
+
+            if (row) {
+              resolve({
+                isDuplicate: true,
+                existingFile: row.file_path,
+                finalFile: row.final_file_path || row.file_path,
+              });
+            } else {
+              resolve({ isDuplicate: false });
+            }
+          }
+        );
+      });
+    } catch (error) {
+      console.error(
+        `❌ Erro ao verificar duplicata por hash: ${(error as Error).message}`
+      );
+      return null;
+    }
+  }
+
   // Salvar embedding no cache usando o nome do arquivo
   async set(
     filePath: string,
     analysis: string,
     embedding: number[],
-    originalFilePath?: string
+    originalFilePath?: string,
+    finalFilePath?: string
   ): Promise<number> {
     return new Promise((resolve, reject) => {
       const fileName = path.basename(filePath);
       const fileHash = getFileHash(filePath);
+      const contentHashPromise = getContentHash(filePath);
+      const fileSizePromise = fs.stat(filePath).then(stats => stats.size);
+      
       if (!fileHash) {
         reject(new Error("Não foi possível gerar hash do arquivo"));
         return;
       }
 
-      fileHash
-        .then((hash) => {
+      Promise.all([fileHash, contentHashPromise, fileSizePromise])
+        .then(([hash, contentHash, fileSize]) => {
           const embeddingJson = JSON.stringify(embedding);
           const originalFileName = originalFilePath
             ? path.basename(originalFilePath)
             : null;
+          const finalFileName = finalFilePath
+            ? path.basename(finalFilePath)
+            : null;
 
           this.db.run(
-            `INSERT OR REPLACE INTO image_cache (file_name, file_path, file_hash, analysis, embedding, original_file_name, original_file_path, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
+            `INSERT OR REPLACE INTO image_cache (
+              file_name, file_path, file_hash, content_hash, file_size,
+              analysis, embedding, original_file_name, original_file_path,
+              final_file_name, final_file_path, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
             [
               fileName,
               filePath,
               hash,
+              contentHash,
+              fileSize,
               analysis,
               embeddingJson,
               originalFileName,
               originalFilePath,
+              finalFileName,
+              finalFilePath,
             ],
             function (err) {
               if (err) {
@@ -197,7 +281,7 @@ export class EmbeddingCache {
               console.log(
                 `    💾 Cache salvo: ${fileName}${
                   originalFileName ? ` (original: ${originalFileName})` : ""
-                }`
+                }${finalFileName ? ` (final: ${finalFileName})` : ""}`
               );
               resolve(this.lastID);
             }
