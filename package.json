@@ -7,6 +7,7 @@
   "scripts": {
     "match": "tsc && node dist/match-images/match-images.js",
     "rename": "tsc && node dist/rename-images/rename-images.js",
+    "match-move": "tsc && node dist/rename-images/match-and-move.js",
     "build": "tsc",
     "build:watch": "tsc --watch",
     "add-js-ext": "ts-node add-js-extensions.ts"
