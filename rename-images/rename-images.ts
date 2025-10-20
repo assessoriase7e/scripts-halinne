@@ -9,7 +9,7 @@ import {
   COPY_FILES,
   DRY_RUN,
   KEEP_MOTHER_FOLDER,
-} from "./rename-config.js";
+} from "../src/rename-config.js";
 import {
   log,
   extractCode,
@@ -23,6 +23,7 @@ import {
 import { updateCacheWithNewNames } from "../src/rename-processor.js";
 import { analyzeImageType } from "../src/image-analyzer.js";
 import { ProcessedImage, ImageType } from "../src/types.js";
+import { initDatabase, EmbeddingCache } from "../src/cache.js";
 
 /**
  * Função principal para processar e renomear imagens
@@ -43,6 +44,16 @@ async function main(): Promise<void> {
 
   const processedFiles: ProcessedImage[] = [];
   const errors: Array<{ file: string; error: string }> = [];
+
+  // Inicializar cache
+  let cache: EmbeddingCache | null = null;
+  try {
+    const db = await initDatabase();
+    cache = new EmbeddingCache(db);
+    console.log("✅ Cache inicializado\n");
+  } catch (error) {
+    console.log(`⚠️ Aviso: Cache não disponível: ${(error as Error).message}\n`);
+  }
 
   try {
     // Verificar se o diretório de entrada existe
@@ -86,13 +97,70 @@ async function main(): Promise<void> {
 
         log("debug", `   Código extraído: ${code}`);
 
+        // Criar caminho base de destino
+        const motherFolderName = path.dirname(imageInfo.relativePath);
+        let destFolder: string;
+        
+        if (motherFolderName && motherFolderName !== ".") {
+          destFolder = path.join(OUTPUT_DIR, motherFolderName, code);
+        } else {
+          destFolder = path.join(OUTPUT_DIR, code);
+        }
+
+        // Verificação rápida: se a pasta de destino já tem arquivos, verificar os tipos comuns
+        // Isso evita análise de IA desnecessária para arquivos já processados
+        if (fsSync.existsSync(destFolder)) {
+          const existingFiles = await fs.readdir(destFolder);
+          const fileName = imageInfo.fileName.toLowerCase();
+          
+          // Verificar padrões comuns que indicam que este arquivo já foi processado
+          const possibleNames = [
+            `${code}.png`, `${code}.jpg`, `${code}.jpeg`,  // MAIN_IMAGE
+            `${code} - P.png`, `${code} - P.jpg`,          // PRODUCT_ON_STONE
+            `${code} - 1.png`, `${code} - 2.png`,          // MAIN_IMAGE duplicadas
+            `${code} - P - 1.png`, `${code} - P - 2.png`,  // PRODUCT_ON_STONE duplicadas
+          ];
+
+          // Se é um arquivo _generated ou _nano_banana, verificar se já existe versão processada
+          const isGenerated = fileName.includes('generated');
+          const isNano = fileName.includes('nano') || fileName.includes('banana');
+          
+          let skipProcessing = false;
+          
+          if (isGenerated && !isNano) {
+            // Arquivo generated (fundo branco) -> verifica se já existe MAIN_IMAGE
+            skipProcessing = existingFiles.some(f => 
+              f.toLowerCase() === `${code}.png` || 
+              f.toLowerCase() === `${code}.jpg` ||
+              f.toLowerCase().startsWith(`${code} - 1`)
+            );
+          } else if (isNano) {
+            // Arquivo nano (pedra) -> verifica se já existe PRODUCT_ON_STONE
+            skipProcessing = existingFiles.some(f => 
+              f.toLowerCase().startsWith(`${code} - p`)
+            );
+          }
+
+          if (skipProcessing) {
+            log("info", `   ⏭️ Arquivo similar já processado, pulando análise de IA`);
+            processedFiles.push({
+              ...imageInfo,
+              success: false,
+              error: "Arquivo similar já processado",
+              code,
+            });
+            continue;
+          }
+        }
+
         // Identificar tipo de imagem usando IA
         let imageType: ImageType;
         try {
           log("debug", `   🔍 Analisando visualmente com IA...`);
           const aiAnalysis = await analyzeImageType(
             imageInfo.filePath,
-            imageInfo.fileName
+            imageInfo.fileName,
+            cache || undefined
           );
           imageType =
             aiAnalysis.type === "VARIANT" ? aiAnalysis : aiAnalysis.type;
@@ -127,25 +195,10 @@ async function main(): Promise<void> {
         );
 
         log("debug", `   Novo nome: ${newFileName}`);
-
-        // Criar caminho de destino
-        let destFolder: string;
-
-        // Sempre preservar estrutura da pasta mãe e criar subpasta com o código
-        const motherFolderName = path.dirname(imageInfo.relativePath);
         log("info", `   Caminho relativo: ${imageInfo.relativePath}`);
         log("info", `   Pasta mãe detectada: "${motherFolderName}"`);
         log("info", `   Caminho completo do arquivo: ${imageInfo.filePath}`);
-
-        if (motherFolderName && motherFolderName !== ".") {
-          // Estrutura: organized/pasta_mãe/código/
-          destFolder = path.join(OUTPUT_DIR, motherFolderName, code);
-          log("info", `   Destino com pasta mãe e código: ${destFolder}`);
-        } else {
-          // Se não há pasta mãe, criar pasta com o código diretamente em organized/
-          destFolder = path.join(OUTPUT_DIR, code);
-          log("info", `   Destino com código (sem pasta mãe): ${destFolder}`);
-        }
+        log("info", `   Destino: ${destFolder}`);
 
         const destPath = path.join(destFolder, newFileName);
 
@@ -205,12 +258,17 @@ async function main(): Promise<void> {
     }
 
     // Exibir resumo final
+    const skippedCount = processedFiles.filter(
+      (f) => !f.success && (f.error?.includes("já processado") || f.error?.includes("já existe"))
+    ).length;
+    
     console.log("\n═══════════════════════════════════════════");
     console.log("✅ PROCESSAMENTO CONCLUÍDO!");
     console.log("═══════════════════════════════════════════");
     console.log(`\n📊 Estatísticas:`);
     console.log(`   ✅ Processados com sucesso: ${report.summary.success}`);
-    console.log(`   ❌ Falhas: ${report.summary.failed}`);
+    console.log(`   ⏭️ Pulados (já processados): ${skippedCount}`);
+    console.log(`   ❌ Falhas: ${report.summary.failed - skippedCount}`);
     console.log(
       `   📁 Pastas criadas: ${
         new Set(processedFiles.filter((f) => f.success).map((f) => f.code)).size
@@ -247,6 +305,11 @@ async function main(): Promise<void> {
     }
 
     process.exit(1);
+  } finally {
+    // Fechar cache
+    if (cache) {
+      cache.close();
+    }
   }
 }
 
