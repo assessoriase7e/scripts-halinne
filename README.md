@@ -100,6 +100,51 @@ npm install
 node index.js
 ```
 
+## Scripts Disponíveis
+
+Este projeto inclui vários scripts para diferentes necessidades:
+
+### Script de Renomeamento (Modo Completo com IA)
+
+```bash
+npm run rename
+```
+
+- Usa IA para analisar e classificar imagens
+- Detecta similaridade visual real
+- Classifica tipos de imagem (MAIN_IMAGE, PRODUCT_ON_STONE, etc.)
+- Requer chave da API OpenAI
+
+### Script de Renomeamento (Modo Simples - Sem IA)
+
+```bash
+npm run simple-move
+```
+
+- Processamento rápido baseado apenas em códigos numéricos
+- Não requer API nem análise visual
+- Ideal para processar grandes lotes rapidamente
+- Usa nomenclatura `código - AD - número` para imagens adicionais
+
+### Script de Match e Movimento
+
+```bash
+npm run match-move
+```
+
+- Encontra correspondências entre imagens
+- Move imagens similares para pastas correspondentes
+
+### Script de Match Principal
+
+```bash
+npm run match
+```
+
+- Script original de correspondência de imagens
+
+Para mais detalhes sobre o modo simples, consulte [README-SIMPLE-MODE.md](README-SIMPLE-MODE.md).
+
 ## Configurações
 
 As configurações podem ser ajustadas no arquivo `match-images/match-config.ts`:
@@ -114,6 +159,7 @@ As configurações podem ser ajustadas no arquivo `match-images/match-config.ts`
 ### Exemplo de KEEP_MOTHER_FOLDER
 
 **Com KEEP_MOTHER_FOLDER = true:**
+
 ```
 input-folder-1/
   └── ANEIS - Ouro/
@@ -127,6 +173,7 @@ match/
 ```
 
 **Com KEEP_MOTHER_FOLDER = false:**
+
 ```
 input-folder-1/
   └── ANEIS - Ouro/
