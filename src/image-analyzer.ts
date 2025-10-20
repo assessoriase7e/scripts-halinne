@@ -1,6 +1,6 @@
 import { apiLimiter } from "./concurrency";
 import { optimizeImage } from "./imageProcessor";
-import { API_KEY } from "./config";
+import { API_KEY } from "./shared-config";
 import { ImageAnalysis } from "./types";
 import OpenAI from "openai";
 

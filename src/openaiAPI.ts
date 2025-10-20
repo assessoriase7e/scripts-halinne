@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import { API_KEY, MIN_SIMILARITY } from "./config";
+import { API_KEY, MIN_SIMILARITY } from "./shared-config";
 import { apiLimiter } from "./concurrency";
 import { optimizeImage } from "./imageProcessor";
 

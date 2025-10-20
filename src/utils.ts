@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import fsSync from "fs";
 import path from "path";
-import { COPY_FILES, RECURSIVE_SEARCH, KEEP_ORIGINAL_NAMES } from "./config";
+import { COPY_FILES, RECURSIVE_SEARCH } from "./shared-config";
 import { ImageInfo, CacheEntry } from "./types";
 import { EmbeddingCache } from "./cache";
 
@@ -95,9 +95,10 @@ export function delay(ms: number): Promise<void> {
  */
 export function generateDestinationName(
   imageInfo: ImageInfo,
-  motherFolder: string
+  motherFolder: string,
+  keepOriginalNames: boolean = false
 ): string {
-  if (KEEP_ORIGINAL_NAMES) {
+  if (keepOriginalNames) {
     // Manter estrutura original de pastas
     return path.dirname(imageInfo.relativePath) || "root";
   } else {

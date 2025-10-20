@@ -11,7 +11,8 @@ import {
   MOTHER_FOLDER,
   MIN_SIMILARITY,
   MAX_CONCURRENT_REQUESTS,
-} from "./config";
+  KEEP_ORIGINAL_NAMES,
+} from "../match-images/match-config";
 import { cosineSimilarity } from "./imageProcessor";
 import { verifySimilarity } from "./openaiAPI";
 import {
@@ -192,7 +193,8 @@ export async function compareAndGroup(
           // Gerar nome da pasta de destino
           const destinationName = generateDestinationName(
             dataW.imageInfo,
-            MOTHER_FOLDER
+            MOTHER_FOLDER,
+            KEEP_ORIGINAL_NAMES
           );
           const folderPath = path.join(PATH_OUT, destinationName);
           await fs.mkdir(folderPath, { recursive: true });

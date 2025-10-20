@@ -1,4 +1,4 @@
-import { MAX_CONCURRENT_REQUESTS, REQUEST_DELAY } from "./config";
+import { MAX_CONCURRENT_REQUESTS, REQUEST_DELAY } from "./shared-config";
 import { Task } from "./types";
 
 // Controle de concorrência para evitar rate limiting

@@ -11,7 +11,7 @@ import {
   RECURSIVE_SEARCH,
   KEEP_ORIGINAL_NAMES,
   MOTHER_FOLDER,
-} from "../src/config";
+} from "./match-config";
 import { initDatabase, EmbeddingCache } from "../src/cache";
 import {
   processImages,

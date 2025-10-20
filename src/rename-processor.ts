@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import fsSync from "fs";
 import path from "path";
-import { CACHE_DB } from "./config";
+import { CACHE_DB } from "./shared-config";
 import { initDatabase, EmbeddingCache, getFileHash } from "./cache";
 import { getImageEmbedding } from "./utils";
 import { ProcessedImage } from "./types";
