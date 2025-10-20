@@ -32,6 +32,7 @@ Contém todas as configurações do aplicativo:
 - Caminhos das pastas
 - Parâmetros de processamento
 - Configurações de cache
+- **KEEP_MOTHER_FOLDER**: Preserva a estrutura da pasta mãe no destino (padrão: true)
 
 ### 2. cache.js
 
@@ -101,13 +102,41 @@ node index.js
 
 ## Configurações
 
-As configurações podem ser ajustadas no arquivo `src/config.js`:
+As configurações podem ser ajustadas no arquivo `match-images/match-config.ts`:
 
 - `MIN_SIMILARITY`: Similaridade mínima para considerar um match (padrão: 0.75)
 - `MAX_CONCURRENT_REQUESTS`: Número máximo de requisições simultâneas (padrão: 3)
 - `COPY_FILES`: Se true, copia arquivos; se false, move arquivos (padrão: true)
 - `RECURSIVE_SEARCH`: Busca imagens em subpastas (padrão: true)
 - `KEEP_ORIGINAL_NAMES`: Mantém nomes originais das pastas (padrão: true)
+- `KEEP_MOTHER_FOLDER`: Preserva estrutura da pasta mãe no destino (padrão: true)
+
+### Exemplo de KEEP_MOTHER_FOLDER
+
+**Com KEEP_MOTHER_FOLDER = true:**
+```
+input-folder-1/
+  └── ANEIS - Ouro/
+      └── 1054.png
+
+match/
+  └── ANEIS - Ouro/    ← Pasta mãe preservada
+      └── 1054/
+          ├── 1054.png
+          └── 1054_modelo.png
+```
+
+**Com KEEP_MOTHER_FOLDER = false:**
+```
+input-folder-1/
+  └── ANEIS - Ouro/
+      └── 1054.png
+
+match/
+  └── 1054/           ← Pasta mãe removida
+      ├── 1054.png
+      └── 1054_modelo.png
+```
 
 ## Saída
 
