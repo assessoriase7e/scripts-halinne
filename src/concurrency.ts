@@ -1,5 +1,5 @@
-import { MAX_CONCURRENT_REQUESTS, REQUEST_DELAY } from "./config.js";
-import { Task } from "./types.js";
+import { MAX_CONCURRENT_REQUESTS, REQUEST_DELAY } from "./config";
+import { Task } from "./types";
 
 // Controle de concorrência para evitar rate limiting
 export class ConcurrencyLimiter {

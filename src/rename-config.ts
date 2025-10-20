@@ -1,5 +1,5 @@
 // Configurações para o script de renomeamento de imagens
-import { RenameConfig } from "./types.js";
+import { RenameConfig } from "./types";
 
 // Diretórios
 export const INPUT_DIR: string = "rename-images/images"; // Diretório com as imagens a serem renomeadas

@@ -11,14 +11,14 @@ import {
   RECURSIVE_SEARCH,
   KEEP_ORIGINAL_NAMES,
   MOTHER_FOLDER,
-} from "../src/config.js";
-import { initDatabase, EmbeddingCache } from "../src/cache.js";
+} from "../src/config";
+import { initDatabase, EmbeddingCache } from "../src/cache";
 import {
   processImages,
   compareAndGroup,
   prepareOutputFolders,
   displayFinalSummary,
-} from "../src/processor.js";
+} from "../src/processor";
 import { Database } from "sqlite3";
 
 /**

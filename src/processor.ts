@@ -11,21 +11,21 @@ import {
   MOTHER_FOLDER,
   MIN_SIMILARITY,
   MAX_CONCURRENT_REQUESTS,
-} from "./config.js";
-import { cosineSimilarity } from "./imageProcessor.js";
-import { verifySimilarity } from "./openaiAPI.js";
+} from "./config";
+import { cosineSimilarity } from "./imageProcessor";
+import { verifySimilarity } from "./openaiAPI";
 import {
   moveFile,
   listImageFiles,
   generateDestinationName,
   getImageEmbedding,
-} from "./utils.js";
+} from "./utils";
 import {
   ImageInfo,
   EmbeddingData,
   ComparisonResult,
   ProcessingStats,
-} from "./types.js";
+} from "./types";
 
 /**
  * Processa imagens de uma pasta e gera embeddings
@@ -231,7 +231,7 @@ export async function compareAndGroup(
           };
 
           await fs.writeFile(
-            path.join(folderPath, "analysis.json"),
+            path.join(folderPath, "analysison"),
             JSON.stringify(detailedData, null, 2)
           );
 
@@ -268,7 +268,7 @@ export async function compareAndGroup(
             path.join(
               PATH_NOT_FOUND,
               PATH_BRANCO,
-              `${path.parse(fnameWhite).name}.json`
+              `${path.parse(fnameWhite).name}on`
             ),
             JSON.stringify(notFoundData, null, 2)
           );
@@ -316,7 +316,7 @@ export async function compareAndGroup(
         path.join(
           PATH_NOT_FOUND,
           PATH_BRANCO,
-          `${path.parse(fnameWhite).name}.json`
+          `${path.parse(fnameWhite).name}on`
         ),
         JSON.stringify(notFoundData, null, 2)
       );
@@ -386,7 +386,7 @@ export async function compareAndGroup(
         path.join(
           PATH_NOT_FOUND,
           PATH_MODELO,
-          `${path.parse(fnameMod).name}.json`
+          `${path.parse(fnameMod).name}on`
         ),
         JSON.stringify(unpairedData, null, 2)
       );
@@ -449,8 +449,8 @@ export function displayFinalSummary(
   console.log(`   ✅ Agrupamentos: ${PATH_OUT}/`);
   console.log(`   ❌ Não encontrados: ${PATH_NOT_FOUND}/`);
   console.log(`\n💡 Dicas:`);
-  console.log(`   - Verifique 'analysis.json' em cada pasta para detalhes`);
-  console.log(`   - Imagens em not_found/ possuem arquivos .json explicativos`);
+  console.log(`   - Verifique 'analysison' em cada pasta para detalhes`);
+  console.log(`   - Imagens em not_found/ possuem arquivos on explicativos`);
   console.log(
     `   - Ajuste MIN_SIMILARITY no código se necessário (atual: ${(
       MIN_SIMILARITY * 100

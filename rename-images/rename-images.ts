@@ -8,7 +8,7 @@ import {
   COUNTERS,
   COPY_FILES,
   DRY_RUN,
-} from "../src/rename-config.js";
+} from "../src/rename-config";
 import {
   log,
   extractCode,
@@ -18,10 +18,10 @@ import {
   moveFile,
   createReport,
   saveReport,
-} from "../src/rename-utils.js";
-import { updateCacheWithNewNames } from "../src/rename-processor.js";
-import { analyzeImageType } from "../src/image-analyzer.js";
-import { ProcessedImage, ImageType } from "../src/types.js";
+} from "../src/rename-utils";
+import { updateCacheWithNewNames } from "../src/rename-processor";
+import { analyzeImageType } from "../src/image-analyzer";
+import { ProcessedImage, ImageType } from "../src/types";
 
 /**
  * Função principal para processar e renomear imagens
@@ -153,7 +153,7 @@ async function main(): Promise<void> {
 
     // Criar e salvar relatório
     const report = createReport(processedFiles, errors);
-    await saveReport(report, path.join(OUTPUT_DIR, "rename-report.json"));
+    await saveReport(report, path.join(OUTPUT_DIR, "rename-reporton"));
 
     // Atualizar cache com novos nomes (se não for modo de simulação)
     if (!DRY_RUN && processedFiles.some((f) => f.success)) {
@@ -161,7 +161,7 @@ async function main(): Promise<void> {
       report.cacheUpdate = cacheResult;
 
       // Atualizar relatório com informações do cache
-      await saveReport(report, path.join(OUTPUT_DIR, "rename-report.json"));
+      await saveReport(report, path.join(OUTPUT_DIR, "rename-reporton"));
     }
 
     // Exibir resumo final
@@ -180,7 +180,7 @@ async function main(): Promise<void> {
     console.log(`   📥 Entrada: ${INPUT_DIR}`);
     console.log(`   📤 Saída: ${OUTPUT_DIR}`);
     console.log(
-      `\n📄 Relatório detalhado: ${path.join(OUTPUT_DIR, "rename-report.json")}`
+      `\n📄 Relatório detalhado: ${path.join(OUTPUT_DIR, "rename-reporton")}`
     );
 
     if (errors.length > 0) {

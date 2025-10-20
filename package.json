@@ -5,8 +5,8 @@
   "type": "module",
   "main": "match-images/match-images.js",
   "scripts": {
-    "match": "ts-node-esm match-images/match-images.ts",
-    "rename": "ts-node-esm rename-images/rename-images.ts",
+    "match": "tsc && node dist/match-images/match-images.js",
+    "rename": "tsc && node dist/rename-images/rename-images.js",
     "build": "tsc",
     "build:watch": "tsc --watch"
   },

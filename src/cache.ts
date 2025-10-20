@@ -2,8 +2,8 @@ import fs from "fs/promises";
 import sqlite3 from "sqlite3";
 import path from "path";
 import { fileURLToPath } from "url";
-import { CACHE_DB } from "./config.js";
-import { CacheEntry } from "./types.js";
+import { CACHE_DB } from "./config";
+import { CacheEntry } from "./types";
 
 // Configuração do banco de dados SQLite para cache
 const __filename = fileURLToPath(import.meta.url);

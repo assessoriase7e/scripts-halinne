@@ -1,5 +1,5 @@
 import sharp from "sharp";
-import { MAX_IMAGE_SIZE } from "./config.js";
+import { MAX_IMAGE_SIZE } from "./config";
 
 /**
  * Redimensiona e otimiza a imagem agressivamente

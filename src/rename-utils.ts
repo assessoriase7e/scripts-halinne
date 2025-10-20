@@ -1,14 +1,14 @@
 import fs from "fs/promises";
 import fsSync from "fs";
 import path from "path";
-import { PATTERNS, COPY_FILES, DRY_RUN, LOG_LEVEL } from "./rename-config.js";
+import { PATTERNS, COPY_FILES, DRY_RUN, LOG_LEVEL } from "./rename-config";
 import {
   ImageInfo,
   ProcessedImage,
   ImageType,
   Counters,
   ReportData,
-} from "./types.js";
+} from "./types";
 
 /**
  * Função de log personalizada
@@ -232,7 +232,7 @@ export function createReport(
  */
 export async function saveReport(
   report: ReportData,
-  outputPath: string = "rename-report.json"
+  outputPath: string = "rename-reporton"
 ): Promise<void> {
   try {
     await fs.writeFile(outputPath, JSON.stringify(report, null, 2));
