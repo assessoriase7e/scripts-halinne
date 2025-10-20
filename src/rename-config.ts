@@ -54,10 +54,11 @@ export const PATTERNS = {
 
 // Configurações de processamento
 export const RECURSIVE_SEARCH: boolean = true; // Buscar em subdiretórios
-export const COPY_FILES: boolean = false; // true para copiar, false para mover
+export const COPY_FILES: boolean = false; // true para copiar, false para mover (IMPORTANTE: false move os arquivos)
 export const DRY_RUN: boolean = false; // true para simular sem fazer alterações
 export const LOG_LEVEL: "debug" | "info" | "warn" | "error" = "info"; // "debug", "info", "warn", "error"
 export const KEEP_MOTHER_FOLDER: boolean = true; // true para manter estrutura da pasta mãe no destino
+export const SIMPLE_MODE: boolean = false; // true para modo simples sem IA, false para modo completo com IA
 
 // Contadores para sequência de arquivos
 export const COUNTERS = {
@@ -76,6 +77,7 @@ export const renameConfig: RenameConfig = {
   DRY_RUN,
   LOG_LEVEL,
   KEEP_MOTHER_FOLDER,
+  SIMPLE_MODE,
   COUNTERS,
   PATTERNS,
 };
