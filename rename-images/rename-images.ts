@@ -9,6 +9,7 @@ import {
   COPY_FILES,
   DRY_RUN,
   KEEP_MOTHER_FOLDER,
+  SIMPLE_MODE,
 } from "../src/rename-config.js";
 import {
   log,
@@ -24,13 +25,19 @@ import { updateCacheWithNewNames } from "../src/rename-processor.js";
 import { analyzeImageType } from "../src/image-analyzer.js";
 import { ProcessedImage, ImageType } from "../src/types.js";
 import { initDatabase, EmbeddingCache } from "../src/cache.js";
+import { getImageEmbedding } from "../src/utils.js";
+import { cosineSimilarity } from "../src/imageProcessor.js";
 
 /**
  * Função principal para processar e renomear imagens
  */
 async function main(): Promise<void> {
   console.log("═══════════════════════════════════════════");
-  console.log("🔄 RENOMEANDO E ORGANIZANDO IMAGENS");
+  console.log(
+    `🔄 RENOMEANDO E ORGANIZANDO IMAGENS (${
+      SIMPLE_MODE ? "MODO SIMPLES - SEM IA" : "MODO COMPLETO - COM IA"
+    })`
+  );
   console.log("═══════════════════════════════════════════\n");
 
   console.log(`⚙️ Configurações:`);
@@ -39,20 +46,29 @@ async function main(): Promise<void> {
   console.log(`   - Busca recursiva: ${RECURSIVE_SEARCH ? "Sim" : "Não"}`);
   console.log(`   - Modo de simulação: ${DRY_RUN ? "Sim" : "Não"}`);
   console.log(`   - Manter pasta mãe: ${KEEP_MOTHER_FOLDER ? "Sim" : "Não"}`);
-  console.log(`   - Atualizar cache: ${!DRY_RUN ? "Sim" : "Não"}`);
-  console.log(`   - Análise visual com IA: Sim\n`);
+  console.log(`   - Modo simples (sem IA): ${SIMPLE_MODE ? "Sim" : "Não"}`);
+  console.log(
+    `   - Atualizar cache: ${!DRY_RUN && !SIMPLE_MODE ? "Sim" : "Não"}`
+  );
+  console.log(`   - Análise visual com IA: ${SIMPLE_MODE ? "Não" : "Sim"}\n`);
 
   const processedFiles: ProcessedImage[] = [];
   const errors: Array<{ file: string; error: string }> = [];
 
-  // Inicializar cache
+  // Inicializar cache apenas no modo completo
   let cache: EmbeddingCache | null = null;
-  try {
-    const db = await initDatabase();
-    cache = new EmbeddingCache(db);
-    console.log("✅ Cache inicializado\n");
-  } catch (error) {
-    console.log(`⚠️ Aviso: Cache não disponível: ${(error as Error).message}\n`);
+  if (!SIMPLE_MODE) {
+    try {
+      const db = await initDatabase();
+      cache = new EmbeddingCache(db);
+      console.log("✅ Cache inicializado\n");
+    } catch (error) {
+      console.log(
+        `⚠️ Aviso: Cache não disponível: ${(error as Error).message}\n`
+      );
+    }
+  } else {
+    console.log("ℹ️ Modo simples: cache não será utilizado\n");
   }
 
   try {
@@ -97,10 +113,39 @@ async function main(): Promise<void> {
 
         log("debug", `   Código extraído: ${code}`);
 
+        // Verificar duplicata por hash de conteúdo (antes de qualquer processamento)
+        if (cache) {
+          try {
+            const duplicateCheck = await cache.checkDuplicateByContentHash(
+              imageInfo.filePath
+            );
+            if (duplicateCheck && duplicateCheck.isDuplicate) {
+              log(
+                "info",
+                `   ⏭️ Arquivo duplicado (mesmo hash): já processado como ${path.basename(
+                  duplicateCheck.finalFile || duplicateCheck.existingFile || ""
+                )}`
+              );
+              processedFiles.push({
+                ...imageInfo,
+                success: false,
+                error: "Arquivo duplicado (mesmo conteúdo)",
+                code,
+              });
+              continue;
+            }
+          } catch (error) {
+            log(
+              "warn",
+              `   ⚠️ Erro ao verificar duplicata: ${(error as Error).message}`
+            );
+          }
+        }
+
         // Criar caminho base de destino
         const motherFolderName = path.dirname(imageInfo.relativePath);
         let destFolder: string;
-        
+
         if (motherFolderName && motherFolderName !== ".") {
           destFolder = path.join(OUTPUT_DIR, motherFolderName, code);
         } else {
@@ -112,37 +157,47 @@ async function main(): Promise<void> {
         if (fsSync.existsSync(destFolder)) {
           const existingFiles = await fs.readdir(destFolder);
           const fileName = imageInfo.fileName.toLowerCase();
-          
+
           // Verificar padrões comuns que indicam que este arquivo já foi processado
           const possibleNames = [
-            `${code}.png`, `${code}.jpg`, `${code}.jpeg`,  // MAIN_IMAGE
-            `${code} - P.png`, `${code} - P.jpg`,          // PRODUCT_ON_STONE
-            `${code} - 1.png`, `${code} - 2.png`,          // MAIN_IMAGE duplicadas
-            `${code} - P - 1.png`, `${code} - P - 2.png`,  // PRODUCT_ON_STONE duplicadas
+            `${code}.png`,
+            `${code}.jpg`,
+            `${code}.jpeg`, // MAIN_IMAGE
+            `${code} - P.png`,
+            `${code} - P.jpg`, // PRODUCT_ON_STONE
+            `${code} - 1.png`,
+            `${code} - 2.png`, // MAIN_IMAGE duplicadas
+            `${code} - P - 1.png`,
+            `${code} - P - 2.png`, // PRODUCT_ON_STONE duplicadas
           ];
 
           // Se é um arquivo _generated ou _nano_banana, verificar se já existe versão processada
-          const isGenerated = fileName.includes('generated');
-          const isNano = fileName.includes('nano') || fileName.includes('banana');
-          
+          const isGenerated = fileName.includes("generated");
+          const isNano =
+            fileName.includes("nano") || fileName.includes("banana");
+
           let skipProcessing = false;
-          
+
           if (isGenerated && !isNano) {
             // Arquivo generated (fundo branco) -> verifica se já existe MAIN_IMAGE
-            skipProcessing = existingFiles.some(f => 
-              f.toLowerCase() === `${code}.png` || 
-              f.toLowerCase() === `${code}.jpg` ||
-              f.toLowerCase().startsWith(`${code} - 1`)
+            skipProcessing = existingFiles.some(
+              (f) =>
+                f.toLowerCase() === `${code}.png` ||
+                f.toLowerCase() === `${code}.jpg` ||
+                f.toLowerCase().startsWith(`${code} - 1`)
             );
           } else if (isNano) {
             // Arquivo nano (pedra) -> verifica se já existe PRODUCT_ON_STONE
-            skipProcessing = existingFiles.some(f => 
+            skipProcessing = existingFiles.some((f) =>
               f.toLowerCase().startsWith(`${code} - p`)
             );
           }
 
           if (skipProcessing) {
-            log("info", `   ⏭️ Arquivo similar já processado, pulando análise de IA`);
+            log(
+              "info",
+              `   ⏭️ Arquivo similar já processado, pulando análise de IA`
+            );
             processedFiles.push({
               ...imageInfo,
               success: false,
@@ -150,6 +205,70 @@ async function main(): Promise<void> {
               code,
             });
             continue;
+          }
+        }
+
+        // Verificar se é uma imagem adicional da mesma peça (mesmo código, ângulo diferente)
+        let isAdditionalAngle = false;
+        if (fsSync.existsSync(destFolder)) {
+          const existingFiles = await fs.readdir(destFolder);
+
+          // Se já existe arquivo principal na pasta, verificar similaridade
+          if (existingFiles.length > 0 && cache) {
+            try {
+              // Buscar embeddings das imagens existentes na pasta
+              for (const existingFile of existingFiles) {
+                const existingFilePath = path.join(destFolder, existingFile);
+                const stats = await fs.stat(existingFilePath);
+
+                if (stats.isFile()) {
+                  const ext = path.extname(existingFile).toLowerCase();
+                  if (
+                    [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp"].includes(
+                      ext
+                    )
+                  ) {
+                    // Verificar similaridade com a imagem existente
+                    const existingEmbedding = await getImageEmbedding(
+                      existingFilePath
+                    );
+                    const newEmbedding = await getImageEmbedding(
+                      imageInfo.filePath
+                    );
+                    const similarity = cosineSimilarity(
+                      existingEmbedding.embedding,
+                      newEmbedding.embedding
+                    );
+
+                    log(
+                      "debug",
+                      `   Similaridade com ${existingFile}: ${(
+                        similarity * 100
+                      ).toFixed(1)}%`
+                    );
+
+                    // Se similaridade for alta (> 85%), considerar como ângulo adicional
+                    if (similarity > 0.85) {
+                      isAdditionalAngle = true;
+                      log(
+                        "info",
+                        `   ✅ Imagem similar detectada (ângulo adicional): ${(
+                          similarity * 100
+                        ).toFixed(1)}%`
+                      );
+                      break;
+                    }
+                  }
+                }
+              }
+            } catch (error) {
+              log(
+                "warn",
+                `   ⚠️ Erro ao verificar similaridade: ${
+                  (error as Error).message
+                }`
+              );
+            }
           }
         }
 
@@ -162,8 +281,19 @@ async function main(): Promise<void> {
             imageInfo.fileName,
             cache || undefined
           );
-          imageType =
-            aiAnalysis.type === "VARIANT" ? aiAnalysis : aiAnalysis.type;
+
+          // Se detectamos que é um ângulo adicional, forçar o tipo como ADDITIONAL_PHOTO
+          if (isAdditionalAngle) {
+            imageType = "ADDITIONAL_PHOTO";
+            log(
+              "info",
+              `   📸 Tipo forçado para ADDITIONAL_PHOTO (ângulo adicional detectado)`
+            );
+          } else {
+            imageType =
+              aiAnalysis.type === "VARIANT" ? aiAnalysis : aiAnalysis.type;
+          }
+
           log(
             "debug",
             `   Tipo identificado pela IA: ${JSON.stringify(
@@ -178,7 +308,21 @@ async function main(): Promise<void> {
               (error as Error).message
             }`
           );
-          imageType = identifyImageType(imageInfo.fileName, imageInfo.filePath);
+
+          // Se detectamos que é um ângulo adicional, forçar o tipo mesmo no fallback
+          if (isAdditionalAngle) {
+            imageType = "ADDITIONAL_PHOTO";
+            log(
+              "info",
+              `   📸 Tipo fallback forçado para ADDITIONAL_PHOTO (ângulo adicional detectado)`
+            );
+          } else {
+            imageType = identifyImageType(
+              imageInfo.fileName,
+              imageInfo.filePath
+            );
+          }
+
           log(
             "debug",
             `   Tipo identificado (fallback): ${JSON.stringify(imageType)}`
@@ -259,9 +403,11 @@ async function main(): Promise<void> {
 
     // Exibir resumo final
     const skippedCount = processedFiles.filter(
-      (f) => !f.success && (f.error?.includes("já processado") || f.error?.includes("já existe"))
+      (f) =>
+        !f.success &&
+        (f.error?.includes("já processado") || f.error?.includes("já existe"))
     ).length;
-    
+
     console.log("\n═══════════════════════════════════════════");
     console.log("✅ PROCESSAMENTO CONCLUÍDO!");
     console.log("═══════════════════════════════════════════");
