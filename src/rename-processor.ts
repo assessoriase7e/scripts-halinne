@@ -40,12 +40,25 @@ export async function updateCacheWithNewNames(
           )}`
         );
 
-        // Buscar entrada existente no cache
-        const cached = await cache.get(oldPath);
+        // Verificar se o arquivo novo existe (já foi movido)
+        const newFileExists = fsSync.existsSync(newPath);
+        if (!newFileExists) {
+          console.log(
+            `   ⚠️ Arquivo de destino não encontrado: ${path.basename(newPath)}`
+          );
+          errorCount++;
+          continue;
+        }
+
+        // Buscar entrada existente no cache usando o caminho antigo (se ainda existir)
+        let cached = null;
+        if (fsSync.existsSync(oldPath)) {
+          cached = await cache.get(oldPath);
+        }
 
         if (cached) {
           // Salvar no cache com o novo nome, mantendo referência ao original
-          await cache.set(newPath, cached.analysis, cached.embedding, oldPath);
+          await cache.set(newPath, cached.analysis, cached.embedding, oldPath, newPath);
           console.log(
             `   ✅ Cache atualizado para: ${path.basename(
               newPath
@@ -62,7 +75,8 @@ export async function updateCacheWithNewNames(
               newPath,
               cachedByOriginal.analysis,
               cachedByOriginal.embedding,
-              oldPath
+              oldPath,
+              newPath
             );
             console.log(
               `   ✅ Cache encontrado por nome original e atualizado para: ${path.basename(
@@ -71,17 +85,28 @@ export async function updateCacheWithNewNames(
             );
             updatedCount++;
           } else {
-            // Se não existe no cache, tentar gerar embedding
+            // Se não existe no cache, tentar gerar embedding usando o novo caminho
             console.log(
               `   📝 Gerando embedding para: ${path.basename(newPath)}`
             );
             try {
+              // Verificar novamente se o arquivo existe antes de tentar gerar embedding
+              if (!fsSync.existsSync(newPath)) {
+                throw new Error(`Arquivo não encontrado: ${newPath}`);
+              }
+              
               const { embedding, analysis } = await getImageEmbedding(
                 newPath,
                 cache
               );
+              
+              // Verificar se a análise foi bem-sucedida
+              if (!analysis || !embedding || embedding.length === 0) {
+                throw new Error("Análise ou embedding inválido");
+              }
+              
               // Salvar no cache com o novo nome e referência ao original
-              await cache.set(newPath, analysis, embedding, oldPath);
+              await cache.set(newPath, analysis, embedding, oldPath, newPath);
               console.log(
                 `   ✅ Embedding gerado e cacheado para: ${path.basename(
                   newPath
