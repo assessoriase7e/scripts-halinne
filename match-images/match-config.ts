@@ -1,5 +1,5 @@
 // Configurações específicas para o script de match-images
-import { Config } from "../src/types";
+import { Config } from "../src/types.js";
 import {
   API_KEY,
   MAX_IMAGE_SIZE,
@@ -9,7 +9,7 @@ import {
   MIN_SIMILARITY,
   COPY_FILES,
   RECURSIVE_SEARCH,
-} from "../src/shared-config";
+} from "../src/shared-config.js";
 
 export const PATH_BRANCO: string = "match-images/input-folder-1";
 export const PATH_MODELO: string = "match-images/input-folder-2";

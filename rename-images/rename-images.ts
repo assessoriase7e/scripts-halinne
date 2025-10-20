@@ -8,7 +8,8 @@ import {
   COUNTERS,
   COPY_FILES,
   DRY_RUN,
-} from "./rename-config";
+  KEEP_MOTHER_FOLDER,
+} from "./rename-config.js";
 import {
   log,
   extractCode,
@@ -18,10 +19,10 @@ import {
   moveFile,
   createReport,
   saveReport,
-} from "../src/rename-utils";
-import { updateCacheWithNewNames } from "../src/rename-processor";
-import { analyzeImageType } from "../src/image-analyzer";
-import { ProcessedImage, ImageType } from "../src/types";
+} from "../src/rename-utils.js";
+import { updateCacheWithNewNames } from "../src/rename-processor.js";
+import { analyzeImageType } from "../src/image-analyzer.js";
+import { ProcessedImage, ImageType } from "../src/types.js";
 
 /**
  * Função principal para processar e renomear imagens
@@ -36,6 +37,7 @@ async function main(): Promise<void> {
   console.log(`   - Diretório de saída: ${OUTPUT_DIR}`);
   console.log(`   - Busca recursiva: ${RECURSIVE_SEARCH ? "Sim" : "Não"}`);
   console.log(`   - Modo de simulação: ${DRY_RUN ? "Sim" : "Não"}`);
+  console.log(`   - Manter pasta mãe: ${KEEP_MOTHER_FOLDER ? "Sim" : "Não"}`);
   console.log(`   - Atualizar cache: ${!DRY_RUN ? "Sim" : "Não"}`);
   console.log(`   - Análise visual com IA: Sim\n`);
 
@@ -127,7 +129,24 @@ async function main(): Promise<void> {
         log("debug", `   Novo nome: ${newFileName}`);
 
         // Criar caminho de destino
-        const destFolder = path.join(OUTPUT_DIR, code);
+        let destFolder: string;
+
+        // Sempre preservar estrutura da pasta mãe e criar subpasta com o código
+        const motherFolderName = path.dirname(imageInfo.relativePath);
+        log("info", `   Caminho relativo: ${imageInfo.relativePath}`);
+        log("info", `   Pasta mãe detectada: "${motherFolderName}"`);
+        log("info", `   Caminho completo do arquivo: ${imageInfo.filePath}`);
+
+        if (motherFolderName && motherFolderName !== ".") {
+          // Estrutura: organized/pasta_mãe/código/
+          destFolder = path.join(OUTPUT_DIR, motherFolderName, code);
+          log("info", `   Destino com pasta mãe e código: ${destFolder}`);
+        } else {
+          // Se não há pasta mãe, criar pasta com o código diretamente em organized/
+          destFolder = path.join(OUTPUT_DIR, code);
+          log("info", `   Destino com código (sem pasta mãe): ${destFolder}`);
+        }
+
         const destPath = path.join(destFolder, newFileName);
 
         // Verificar se o arquivo de destino já existe

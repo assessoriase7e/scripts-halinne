@@ -109,6 +109,7 @@ export interface RenameConfig {
   COPY_FILES: boolean;
   DRY_RUN: boolean;
   LOG_LEVEL: "debug" | "info" | "warn" | "error";
+  KEEP_MOTHER_FOLDER: boolean;
   COUNTERS: Counters;
   PATTERNS: {
     CODE_EXTRACT: RegExp;
