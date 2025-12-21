@@ -1,0 +1,20 @@
+[
+  {
+    "code": "2544B29",
+    "name": "Anel Fininho Quadrado Banh Ouro 18k -2544b29",
+    "error": "Falha após 3 tentativas: OpenAI API error: You uploaded an unsupported image. Please make sure your image is valid.",
+    "timestamp": "2025-12-17T02:07:35.604Z"
+  },
+  {
+    "code": "1473",
+    "name": "Conunto Brinco Coracao Trabalhado Banh Ouro 18k -br6597",
+    "error": "Cannot convert undefined or null to object",
+    "timestamp": "2025-12-17T02:12:38.686Z"
+  },
+  {
+    "code": "85",
+    "name": "Brinco Argola Fios Caracol Torcidos Banh Ouro 18k - B02094",
+    "error": "Cannot convert undefined or null to object",
+    "timestamp": "2025-12-17T02:20:08.451Z"
+  }
+]
