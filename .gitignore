@@ -2,3 +2,12 @@ node_modules
 dist/
 rename-images/images/*
 rename-images/organized/*
+match-images/base/*
+match-images/joins/*
+rename/ready/*
+gen-images/input/*
+gen-images/output/*
+gen-images/processing-cache.json
+gen-images/logs/*
+gen-images/logs/*
+gen-images/pending/*
