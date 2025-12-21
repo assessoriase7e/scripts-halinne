@@ -1,6 +1,6 @@
 import {
-  PATH_BRANCO,
-  PATH_MODELO,
+  PATH_BASE,
+  PATH_JOIN,
   MIN_SIMILARITY,
   TOP_N,
   MAX_IMAGE_SIZE,
@@ -47,9 +47,7 @@ async function main(): Promise<void> {
     console.log(
       `   - Manter nomes originais: ${KEEP_ORIGINAL_NAMES ? "Sim" : "Não"}`
     );
-    console.log(
-      `   - Manter pasta mãe: ${KEEP_MOTHER_FOLDER ? "Sim" : "Não"}`
-    );
+    console.log(`   - Manter pasta mãe: ${KEEP_MOTHER_FOLDER ? "Sim" : "Não"}`);
     console.log(`   - Pasta mãe: ${MOTHER_FOLDER}\n`);
 
     // Inicializar banco de dados e cache
@@ -66,15 +64,11 @@ async function main(): Promise<void> {
     // Preparar pastas de saída
     await prepareOutputFolders();
 
-    // 1. Gerar embeddings para imagens em fundo branco (processamento paralelo com cache)
-    const embBranco = await processImages(
-      PATH_BRANCO,
-      cache,
-      "em fundo branco"
-    );
+    // 1. Gerar embeddings para imagens base (processamento paralelo com cache)
+    const embBranco = await processImages(PATH_BASE, cache, "base");
 
-    // 2. Gerar embeddings para imagens com modelo (processamento paralelo)
-    const embModelo = await processImages(PATH_MODELO, cache, "com modelo");
+    // 2. Gerar embeddings para imagens join (processamento paralelo)
+    const embModelo = await processImages(PATH_JOIN, cache, "join");
 
     // 3. Comparar e agrupar (processamento paralelo com controle de concorrência)
     const results = await compareAndGroup(embBranco, embModelo);

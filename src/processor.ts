@@ -2,8 +2,8 @@ import fs from "fs/promises";
 import fsSync from "fs";
 import path from "path";
 import {
-  PATH_BRANCO,
-  PATH_MODELO,
+  PATH_BASE,
+  PATH_JOIN,
   PATH_OUT,
   PATH_NOT_FOUND,
   RECURSIVE_SEARCH,
@@ -244,12 +244,12 @@ export async function compareAndGroup(
           console.log(
             `   ❌ Verificação visual falhou - não são similares o suficiente`
           );
-          console.log(`   📦 Movendo para not_found/${PATH_BRANCO}/`);
+          console.log(`   📦 Movendo para not_found/${PATH_BASE}/`);
 
           // COPIAR ou MOVER para not_found
           await moveFile(
             dataW.imageInfo.filePath,
-            path.join(PATH_NOT_FOUND, PATH_BRANCO, fnameWhite),
+            path.join(PATH_NOT_FOUND, PATH_BASE, fnameWhite),
             COPY_FILES
           );
 
@@ -271,7 +271,7 @@ export async function compareAndGroup(
           await fs.writeFile(
             path.join(
               PATH_NOT_FOUND,
-              PATH_BRANCO,
+              PATH_BASE,
               `${path.parse(fnameWhite).name}on`
             ),
             JSON.stringify(notFoundData, null, 2)
@@ -293,12 +293,12 @@ export async function compareAndGroup(
           1
         )}% < ${(MIN_SIMILARITY * 100).toFixed(0)}%)`
       );
-      console.log(`   📦 Movendo para not_found/${PATH_BRANCO}/`);
+      console.log(`   📦 Movendo para not_found/${PATH_BASE}/`);
 
       // COPIAR ou MOVER para not_found
       await moveFile(
         dataW.imageInfo.filePath,
-        path.join(PATH_NOT_FOUND, PATH_BRANCO, fnameWhite),
+        path.join(PATH_NOT_FOUND, PATH_BASE, fnameWhite),
         COPY_FILES
       );
 
@@ -319,7 +319,7 @@ export async function compareAndGroup(
       await fs.writeFile(
         path.join(
           PATH_NOT_FOUND,
-          PATH_BRANCO,
+          PATH_BASE,
           `${path.parse(fnameWhite).name}on`
         ),
         JSON.stringify(notFoundData, null, 2)
@@ -373,7 +373,7 @@ export async function compareAndGroup(
       // COPIAR ou MOVER para not_found
       await moveFile(
         dataM.imageInfo.filePath,
-        path.join(PATH_NOT_FOUND, PATH_MODELO, fnameMod),
+        path.join(PATH_NOT_FOUND, PATH_JOIN, fnameMod),
         COPY_FILES
       );
 
@@ -387,11 +387,7 @@ export async function compareAndGroup(
       };
 
       await fs.writeFile(
-        path.join(
-          PATH_NOT_FOUND,
-          PATH_MODELO,
-          `${path.parse(fnameMod).name}on`
-        ),
+        path.join(PATH_NOT_FOUND, PATH_JOIN, `${path.parse(fnameMod).name}on`),
         JSON.stringify(unpairedData, null, 2)
       );
 
@@ -411,11 +407,11 @@ export async function compareAndGroup(
  */
 export async function prepareOutputFolders(): Promise<void> {
   // Verificar se as pastas de entrada existem
-  if (!fsSync.existsSync(PATH_BRANCO)) {
-    throw new Error(`Pasta não encontrada: ${PATH_BRANCO}`);
+  if (!fsSync.existsSync(PATH_BASE)) {
+    throw new Error(`Pasta não encontrada: ${PATH_BASE}`);
   }
-  if (!fsSync.existsSync(PATH_MODELO)) {
-    throw new Error(`Pasta não encontrada: ${PATH_MODELO}`);
+  if (!fsSync.existsSync(PATH_JOIN)) {
+    throw new Error(`Pasta não encontrada: ${PATH_JOIN}`);
   }
 
   // Criar pastas de saída
@@ -424,10 +420,10 @@ export async function prepareOutputFolders(): Promise<void> {
   }
   if (!fsSync.existsSync(PATH_NOT_FOUND)) {
     await fs.mkdir(PATH_NOT_FOUND, { recursive: true });
-    await fs.mkdir(path.join(PATH_NOT_FOUND, PATH_BRANCO), {
+    await fs.mkdir(path.join(PATH_NOT_FOUND, PATH_BASE), {
       recursive: true,
     });
-    await fs.mkdir(path.join(PATH_NOT_FOUND, PATH_MODELO), {
+    await fs.mkdir(path.join(PATH_NOT_FOUND, PATH_JOIN), {
       recursive: true,
     });
   }

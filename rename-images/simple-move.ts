@@ -14,6 +14,8 @@ const adCounters: Record<string, number> = {};
 /**
  * Função de log personalizada
  */
+
+
 function log(level: "info" | "warn" | "error", message: string): void {
   const timestamp = new Date().toLocaleTimeString();
   const prefix =
@@ -253,7 +255,7 @@ async function main(): Promise<void> {
           await fs.access(destPath);
           log(
             "warn",
-            `   ⚠️ Arquivo de destino já existe, pulando: ${destFileName}`
+            `   ⚠️ Arquivo de destino já existe, ignorando: ${destFileName}`
           );
           skippedCount++;
           continue;

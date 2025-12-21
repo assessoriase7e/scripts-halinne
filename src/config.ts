@@ -3,9 +3,9 @@ import { Config } from "./types.js";
 
 export const API_KEY: string = process.env.OPENAI_API_KEY || "";
 
-export const PATH_BRANCO: string = "match-images/input-folder-1";
-export const PATH_MODELO: string = "match-images/input-folder-2";
-export const PATH_OUT: string = "match-images/match";
+export const PATH_BASE: string = "match-images/base";
+export const PATH_JOIN: string = "match-images/join";
+export const PATH_OUT: string = "match-images/organized";
 export const PATH_NOT_FOUND: string = "match-images/not_found";
 
 export const TOP_N: number = 5; // quantas correspondências pegar em cada imagem de input
@@ -19,13 +19,13 @@ export const CACHE_DB: string = "image_cache.db"; // arquivo do banco de dados S
 export const COPY_FILES: boolean = true; // true para copiar, false para mover arquivos
 export const RECURSIVE_SEARCH: boolean = true; // buscar imagens em subpastas recursivamente
 export const KEEP_ORIGINAL_NAMES: boolean = true; // true para manter nomes originais das pastas de destino
-export const MOTHER_FOLDER: string = PATH_BRANCO; // pasta "mãe" de onde sairão os nomes para as pastas de destino
+export const MOTHER_FOLDER: string = PATH_BASE; // pasta "mãe" de onde sairão os nomes para as pastas de destino
 
 // Exportar configuração completa
 export const config: Config = {
   API_KEY,
-  PATH_BRANCO,
-  PATH_MODELO,
+  PATH_BASE,
+  PATH_JOIN,
   PATH_OUT,
   PATH_NOT_FOUND,
   TOP_N,
@@ -39,4 +39,5 @@ export const config: Config = {
   KEEP_ORIGINAL_NAMES,
   MOTHER_FOLDER,
   KEEP_MOTHER_FOLDER: true,
+  NAMING_PATTERN: "[folder_name] - [M] - [number]",
 };

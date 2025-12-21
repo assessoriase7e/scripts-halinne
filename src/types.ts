@@ -88,8 +88,8 @@ export interface Counters {
 // Configurações
 export interface Config {
   API_KEY: string;
-  PATH_BRANCO: string;
-  PATH_MODELO: string;
+  PATH_BASE: string;
+  PATH_JOIN: string;
   PATH_OUT: string;
   PATH_NOT_FOUND: string;
   TOP_N: number;
@@ -103,6 +103,7 @@ export interface Config {
   KEEP_ORIGINAL_NAMES: boolean;
   MOTHER_FOLDER: string;
   KEEP_MOTHER_FOLDER: boolean;
+  NAMING_PATTERN: string;
 }
 
 export interface RenameConfig {
