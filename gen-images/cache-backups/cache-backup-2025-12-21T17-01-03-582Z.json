@@ -1,0 +1,27 @@
+{
+  "pedra\\anel-ouro\\1564.png": {
+    "status": "error",
+    "error": "Erro no upload: Missing token. Please set the `UPLOADTHING_TOKEN` environment variable or provide a ...",
+    "timestamp": "2025-12-21T17:01:00.542Z"
+  },
+  "pedra\\anel-ouro\\1569.png": {
+    "status": "error",
+    "error": "Erro no upload: Missing token. Please set the `UPLOADTHING_TOKEN` environment variable or provide a ...",
+    "timestamp": "2025-12-21T17:01:01.531Z"
+  },
+  "pedra\\anel-ouro\\1571.png": {
+    "status": "error",
+    "error": "Erro no upload: Missing token. Please set the `UPLOADTHING_TOKEN` environment variable or provide a ...",
+    "timestamp": "2025-12-21T17:01:01.536Z"
+  },
+  "pedra\\anel-ouro\\1572.png": {
+    "status": "error",
+    "error": "Erro no upload: Missing token. Please set the `UPLOADTHING_TOKEN` environment variable or provide a ...",
+    "timestamp": "2025-12-21T17:01:01.557Z"
+  },
+  "pedra\\anel-ouro\\1574.png": {
+    "status": "error",
+    "error": "Erro no upload: Missing token. Please set the `UPLOADTHING_TOKEN` environment variable or provide a ...",
+    "timestamp": "2025-12-21T17:01:01.578Z"
+  }
+}
