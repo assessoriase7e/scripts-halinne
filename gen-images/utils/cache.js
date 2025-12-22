@@ -72,6 +72,43 @@ export function backupCache() {
   }
 }
 
+// Busca qualquer arquivo de saída existente para um arquivo original, independente do sufixo
+function findAnyOutputFile(fileInfo) {
+  const { relativePath, fileName } = fileInfo;
+  const baseName = path.parse(fileName).name;
+  const relativeDir = path.dirname(relativePath);
+  const outputSubDir =
+    relativeDir !== "." ? path.join(config.outputDir, relativeDir) : config.outputDir;
+
+  // Se a pasta de saída não existe, não há arquivo de saída
+  if (!fs.existsSync(outputSubDir)) {
+    return null;
+  }
+
+  // Lista todos os arquivos na pasta de saída
+  const files = fs.readdirSync(outputSubDir);
+
+  // Procura por arquivos que começam com o nome base seguido de " - " (padrão do sufixo)
+  // Exemplos: "123 - P.png", "123 - M.png", "123 - P(2).png"
+  const extensions = [".png", ".jpg", ".jpeg"];
+
+  for (const file of files) {
+    // Verifica se o arquivo começa com o nome base seguido de " - "
+    if (file.startsWith(baseName + " - ")) {
+      // Verifica se tem uma extensão válida
+      const ext = path.extname(file).toLowerCase();
+      if (extensions.includes(ext)) {
+        const outputPath = path.join(outputSubDir, file);
+        if (fs.existsSync(outputPath)) {
+          return outputPath;
+        }
+      }
+    }
+  }
+
+  return null;
+}
+
 // Verifica se imagem já foi processada
 export function isAlreadyProcessed(fileInfo, suffix, force, cache) {
   if (force) {
@@ -87,9 +124,9 @@ export function isAlreadyProcessed(fileInfo, suffix, force, cache) {
 
     // Se está marcado como concluído
     if (cacheEntry.status === "completed") {
-      // Verifica se o arquivo de saída ainda existe
-      const expectedOutputPath = getExpectedOutputPath(fileInfo, suffix);
-      if (fs.existsSync(expectedOutputPath)) {
+      // Verifica se existe QUALQUER arquivo de saída (independente do sufixo)
+      const anyOutputFile = findAnyOutputFile(fileInfo);
+      if (anyOutputFile && fs.existsSync(anyOutputFile)) {
         // Verifica se a imagem original não mudou (comparando hash)
         try {
           const currentHash = calculateFileHash(fullPath);
@@ -114,18 +151,21 @@ export function isAlreadyProcessed(fileInfo, suffix, force, cache) {
     }
   }
 
-  // Verifica se arquivo de saída já existe (verificação rápida)
-  const expectedOutputPath = getExpectedOutputPath(fileInfo, suffix);
-  if (fs.existsSync(expectedOutputPath)) {
-    // Arquivo existe, marca no cache
-    const fileHash = calculateFileHash(fullPath);
-    cache[cacheKey] = {
-      status: "completed",
-      outputPath: expectedOutputPath,
-      fileHash: fileHash,
-      timestamp: new Date().toISOString(),
-    };
-    saveCache(cache);
+  // Verifica se existe QUALQUER arquivo de saída (independente do sufixo atual)
+  const anyOutputFile = findAnyOutputFile(fileInfo);
+  if (anyOutputFile) {
+    // Arquivo existe, marca no cache apenas se não estiver já marcado
+    // (evita salvar cache desnecessariamente)
+    if (!cache[cacheKey] || cache[cacheKey].status !== "completed") {
+      const fileHash = calculateFileHash(fullPath);
+      cache[cacheKey] = {
+        status: "completed",
+        outputPath: anyOutputFile,
+        fileHash: fileHash,
+        timestamp: new Date().toISOString(),
+      };
+      saveCache(cache);
+    }
     return true;
   }
 
@@ -173,6 +213,33 @@ export function clearCache() {
     logger.error(`Erro ao limpar cache: ${error.message}`);
     throw error;
   }
+}
+
+// Remove entradas do cache para imagens estáticas (que não devem ser processadas)
+export function removeStaticImagesFromCache(cache) {
+  let removedCount = 0;
+  const keysToRemove = [];
+
+  Object.keys(cache).forEach((key) => {
+    const fileName = path.basename(key);
+    const nameWithoutExt = path.parse(fileName).name.toLowerCase();
+
+    if (config.staticImageNames.includes(nameWithoutExt)) {
+      keysToRemove.push(key);
+    }
+  });
+
+  keysToRemove.forEach((key) => {
+    delete cache[key];
+    removedCount++;
+  });
+
+  if (removedCount > 0) {
+    saveCache(cache);
+    logger.info(`Removidas ${removedCount} entrada(s) de imagens estáticas do cache`);
+  }
+
+  return removedCount;
 }
 
 // Obtém estatísticas do cache

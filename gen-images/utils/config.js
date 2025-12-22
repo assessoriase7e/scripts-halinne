@@ -116,7 +116,7 @@ export const config = {
 
   // Prompt padrão
   defaultPrompt:
-    "A realistic photograph of a piece positioned in the center of two stacked stones. Both stones remain fully visible, with golden cracks. The lighting, shadows, and overall color tones blend perfectly. Warm atmosphere in shades of beige and gold, high realism, smooth integration.",
+    "A realistic photograph of a piece positioned in the center of two stacked stones. Both stones remain fully visible. The lighting, shadows, and overall color tones blend perfectly. High realism, smooth integration.",
 
   // Imagens estáticas
   staticImageNames: ["static-1", "static-2"],

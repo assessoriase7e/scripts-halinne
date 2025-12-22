@@ -59,7 +59,8 @@ export class Metrics {
   }
 
   getEstimatedTimeRemaining() {
-    const remaining = this.totalFiles - this.processed;
+    // Considera apenas arquivos que ainda precisam ser processados (não pulados)
+    const remaining = this.totalFiles - this.processed - this.skipped;
     if (remaining <= 0 || this.processed === 0) return 0;
 
     const avgTime = this.getAverageTimePerFile();
@@ -85,7 +86,9 @@ export class Metrics {
 
   getProgressPercentage() {
     if (this.totalFiles === 0) return 0;
-    return Math.round((this.processed / this.totalFiles) * 100);
+    // Considera arquivos processados + pulados como progresso
+    const totalHandled = this.processed + this.skipped;
+    return Math.round((totalHandled / this.totalFiles) * 100);
   }
 
   getSuccessRate() {

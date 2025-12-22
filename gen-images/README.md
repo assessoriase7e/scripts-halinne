@@ -48,6 +48,7 @@ node nano-banana-batch-gen.js -s="-P"
 - `-c` ou `--clean`: Limpa o cache de processamento
 - `-st` ou `--status`: Mostra estatísticas do cache
 - `-d` ou `--debug`: Ativa modo debug (logs detalhados)
+- `--cache-only` ou `--build-cache`: Constrói o cache apenas (sem gerar imagens)
 
 ### Exemplos
 
@@ -66,6 +67,10 @@ node nano-banana-batch-gen.js --clean
 
 # Modo debug
 node nano-banana-batch-gen.js -s="-P" --debug
+
+# Construir cache apenas (sem gerar imagens)
+# Útil para pré-popular o cache com arquivos já existentes
+node nano-banana-batch-gen.js --cache-only
 ```
 
 ## 📁 Estrutura de Pastas
@@ -92,6 +97,13 @@ gen-images/
    - Se houver `static-1.png` ou `static-2.png` na raiz de `input/`, serão usadas para todas as imagens
    - Se houver `static-1.png` ou `static-2.png` em uma subpasta específica, serão usadas apenas para imagens daquela subpasta
    - Ambas podem ser combinadas (globais + locais)
+   - **Importante**: Imagens estáticas não são processadas como imagens principais, apenas como referência
+
+2. **Prompts Personalizados**:
+   - Você pode criar um arquivo `prompt.txt` em qualquer subpasta
+   - O prompt personalizado será usado para todas as imagens daquela subpasta
+   - Se não houver `prompt.txt`, o prompt padrão será usado
+   - Veja `PROMPT-EXAMPLES.md` para mais detalhes
 
 2. **Cache**:
    - O script mantém um cache de processamento em `processing-cache.json`

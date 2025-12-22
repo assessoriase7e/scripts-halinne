@@ -14,3 +14,4 @@ gen-images/processing-cache.json
 gen-images/logs/*
 gen-images/logs/*
 gen-images/pending/*
+gen-images/cache-backups/*

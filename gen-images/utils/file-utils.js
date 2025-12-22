@@ -5,6 +5,7 @@ import fs from "fs";
 import path from "path";
 import { createHash } from "crypto";
 import { config } from "./config.js";
+import { logger } from "./logger.js";
 
 // Calcula hash MD5 de um arquivo
 export function calculateFileHash(filePath) {
@@ -87,11 +88,9 @@ export function getAllImageFiles(dir, baseDir = dir, fileList = []) {
       const relativePath = path.relative(baseDir, filePath);
       const nameWithoutExt = path.parse(file).name.toLowerCase();
 
-      // Ignora imagens estáticas apenas se estiverem na raiz de input
-      if (
-        path.dirname(relativePath) === "." &&
-        config.staticImageNames.includes(nameWithoutExt)
-      ) {
+      // Ignora imagens estáticas em qualquer lugar (raiz ou subpastas)
+      // Elas são apenas referências, não devem ser processadas como imagens principais
+      if (config.staticImageNames.includes(nameWithoutExt)) {
         continue;
       }
 
@@ -115,6 +114,27 @@ export function filterNonStaticFiles(files) {
     const nameWithoutExt = path.parse(file).name.toLowerCase();
     return !config.staticImageNames.includes(nameWithoutExt);
   });
+}
+
+// Lê o prompt personalizado de uma subpasta (prompt.txt)
+// Se não existir, retorna o prompt padrão
+export function getPromptForDirectory(imageDir) {
+  const promptFilePath = path.join(imageDir, "prompt.txt");
+
+  if (fs.existsSync(promptFilePath)) {
+    try {
+      const customPrompt = fs.readFileSync(promptFilePath, "utf-8").trim();
+      if (customPrompt.length > 0) {
+        return customPrompt;
+      }
+    } catch (error) {
+      // Se houver erro ao ler, usa o prompt padrão
+      logger.warn(`Erro ao ler prompt.txt de ${imageDir}: ${error.message}`);
+    }
+  }
+
+  // Retorna o prompt padrão se não houver prompt.txt ou se houver erro
+  return config.defaultPrompt;
 }
 
 

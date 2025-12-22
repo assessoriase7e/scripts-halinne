@@ -46,6 +46,8 @@ export function parseArgs() {
   const clean = args.includes("--clean") || args.includes("-c");
   const status = args.includes("--status") || args.includes("-st");
   const debug = args.includes("--debug") || args.includes("-d");
+  const cacheOnly =
+    args.includes("--cache-only") || args.includes("--build-cache");
 
   return {
     suffix: suffix || "",
@@ -53,7 +55,6 @@ export function parseArgs() {
     clean,
     status,
     debug,
+    cacheOnly,
   };
 }
-
-

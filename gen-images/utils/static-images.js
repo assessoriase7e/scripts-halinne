@@ -19,7 +19,9 @@ export async function loadStaticImagesFromDir(targetDir, isRoot = false) {
       const staticPath = path.join(targetDir, `${staticName}${ext}`);
       if (fs.existsSync(staticPath)) {
         try {
-          const location = isRoot ? "raiz" : path.relative(config.inputDir, targetDir);
+          const location = isRoot
+            ? "raiz"
+            : path.relative(config.inputDir, targetDir);
           logger.info(
             `Fazendo upload de ${staticName}${ext} (${location}) para UploadThing...`
           );
@@ -46,5 +48,3 @@ export async function loadStaticImagesFromDir(targetDir, isRoot = false) {
 export async function loadStaticImages() {
   return await loadStaticImagesFromDir(config.inputDir, true);
 }
-
-

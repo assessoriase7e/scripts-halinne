@@ -8,7 +8,12 @@ import path from "path";
 import { config, ensureDirectories } from "./utils/config.js";
 import { logger } from "./utils/logger.js";
 import { parseArgs } from "./utils/args-parser.js";
-import { getAllImageFiles, getExpectedOutputPath } from "./utils/file-utils.js";
+import {
+  getAllImageFiles,
+  getExpectedOutputPath,
+  getPromptForDirectory,
+  calculateFileHash,
+} from "./utils/file-utils.js";
 import {
   loadCache,
   saveCache,
@@ -18,6 +23,7 @@ import {
   markAsError,
   clearCache,
   getCacheStats,
+  removeStaticImagesFromCache,
 } from "./utils/cache.js";
 import { validateEnvironment } from "./utils/validators.js";
 import { Metrics } from "./utils/metrics.js";
@@ -97,11 +103,14 @@ async function processImage(
     logger.warn(
       `Arquivo ${relativePath} já foi processado ou removido, pulando...`
     );
+    metrics.incrementSkipped();
     return;
   }
 
   // Verifica se já foi processado (cache + verificação de arquivo)
-  if (isAlreadyProcessed(fileInfo, suffix, force, cache)) {
+  // Nota: Esta verificação já foi feita no filtro do loop principal,
+  // mas mantemos aqui como segurança caso force=true ou cache mude durante execução
+  if (!force && isAlreadyProcessed(fileInfo, suffix, false, cache)) {
     logger.info(`Imagem ${relativePath} já foi processada, pulando...`);
     metrics.incrementSkipped();
     return;
@@ -120,6 +129,20 @@ async function processImage(
     logger.debug(
       `Estáticas para ${relativePath}: ${globalStaticImages.length} global(is) + ${localStaticImages.length} local(is) = ${allStaticImages.length} total`
     );
+
+    // Obtém o prompt para esta subpasta (pode ser personalizado via prompt.txt)
+    const prompt = getPromptForDirectory(imageDir);
+    const isCustomPrompt = prompt !== config.defaultPrompt;
+
+    if (isCustomPrompt) {
+      logger.info(
+        `Usando prompt personalizado de ${path.relative(
+          config.inputDir,
+          imageDir
+        )}/prompt.txt`
+      );
+      logger.debug(`Prompt personalizado: ${prompt.substring(0, 100)}...`);
+    }
 
     // Faz upload da imagem principal para o UploadThing
     logger.info(`Fazendo upload de ${relativePath} para UploadThing...`);
@@ -140,12 +163,14 @@ async function processImage(
 
     // Monta o payload da requisição
     const payload = {
-      prompt: config.defaultPrompt,
+      prompt: prompt,
       image_urls: allImages,
     };
 
     logger.debug("Payload enviado:", {
-      prompt: config.defaultPrompt,
+      prompt: isCustomPrompt
+        ? "[personalizado]"
+        : prompt.substring(0, 50) + "...",
       image_urls_count: allImages.length,
     });
 
@@ -313,8 +338,29 @@ async function processImage(
     metrics.incrementError();
     const errorMessage = error?.message || error;
     let cleanError = errorMessage;
+
     if (typeof errorMessage === "string") {
+      // Detecta erro específico de cota de armazenamento excedida
       if (
+        errorMessage.includes("Cota de armazenamento") ||
+        errorMessage.includes("Storage quota exceeded") ||
+        errorMessage.includes("quota exceeded") ||
+        errorMessage.includes("quota")
+      ) {
+        cleanError = "Cota de armazenamento do UploadThing excedida";
+        logger.error(
+          `❌ COTA DE ARMAZENAMENTO EXCEDIDA no arquivo ${relativePath}\n` +
+            `   A conta do UploadThing atingiu o limite de armazenamento.\n` +
+            `   Ação necessária: Libere espaço ou atualize o plano do UploadThing.\n` +
+            `   Processamento interrompido para evitar mais falhas.`
+        );
+        // Marca como erro crítico que deve interromper o processamento
+        markAsError(fileInfo, cleanError, cache);
+        throw new Error(
+          `ERRO CRÍTICO: ${cleanError}. ` +
+            `Por favor, resolva o problema de armazenamento antes de continuar.`
+        );
+      } else if (
         errorMessage.includes("iVBORw0KGgo") ||
         errorMessage.includes("data:image/")
       ) {
@@ -365,6 +411,139 @@ async function clean() {
   );
 }
 
+// Comando para construir cache apenas (sem gerar imagens)
+async function buildCacheOnly(args) {
+  logger.info("🔨 Modo de construção de cache ativado (sem gerar imagens)...");
+
+  // Garante diretórios necessários
+  ensureDirectories();
+
+  // Carrega cache existente
+  logger.info("Carregando cache de processamento...");
+  const cache = loadCache();
+
+  // Remove entradas de imagens estáticas do cache
+  const removedStaticCount = removeStaticImagesFromCache(cache);
+  if (removedStaticCount > 0) {
+    logger.warn(
+      `Removidas ${removedStaticCount} entrada(s) de imagens estáticas do cache`
+    );
+  }
+
+  const initialStats = getCacheStats(cache);
+  logger.info(
+    `Cache inicial: ${initialStats.completed} imagem(ns) já processada(s)`
+  );
+
+  // Busca todas as imagens nas subpastas
+  logger.info("Buscando imagens recursivamente em todas as subpastas...");
+  const allImageFiles = getAllImageFiles(config.inputDir, config.inputDir);
+  const totalFiles = allImageFiles.length;
+
+  if (totalFiles === 0) {
+    logger.info("Nenhuma imagem encontrada na pasta input e subpastas.");
+    return;
+  }
+
+  logger.info(`Encontradas ${totalFiles} imagem(ns) para verificar.`);
+
+  // Verifica cada imagem e adiciona ao cache se já existe arquivo de saída
+  let addedToCache = 0;
+  let alreadyInCache = 0;
+  let notFound = 0;
+
+  for (const fileInfo of allImageFiles) {
+    const { relativePath, fullPath } = fileInfo;
+    const cacheKey = relativePath;
+
+    // Se já está no cache como concluído, verifica se o arquivo ainda existe
+    if (cache[cacheKey] && cache[cacheKey].status === "completed") {
+      const anyOutputFile = findAnyOutputFile(fileInfo);
+      if (anyOutputFile && fs.existsSync(anyOutputFile)) {
+        alreadyInCache++;
+        continue;
+      } else {
+        // Arquivo de saída não existe mais, remove do cache
+        delete cache[cacheKey];
+      }
+    }
+
+    // Verifica se existe algum arquivo de saída para esta imagem
+    const anyOutputFile = findAnyOutputFile(fileInfo);
+    if (anyOutputFile) {
+      // Arquivo de saída existe, adiciona ao cache
+      try {
+        const fileHash = calculateFileHash(fullPath);
+        cache[cacheKey] = {
+          status: "completed",
+          outputPath: anyOutputFile,
+          fileHash: fileHash,
+          timestamp: new Date().toISOString(),
+        };
+        addedToCache++;
+        logger.debug(
+          `Adicionado ao cache: ${relativePath} -> ${path.basename(
+            anyOutputFile
+          )}`
+        );
+      } catch (error) {
+        logger.warn(
+          `Erro ao calcular hash de ${relativePath}: ${error.message}`
+        );
+        notFound++;
+      }
+    } else {
+      notFound++;
+    }
+  }
+
+  // Salva o cache atualizado
+  saveCache(cache);
+  backupCache();
+
+  // Mostra estatísticas finais
+  const finalStats = getCacheStats(cache);
+  logger.info("📊 Estatísticas da construção do cache:");
+  logger.info(`  Total de imagens verificadas: ${totalFiles}`);
+  logger.info(`  Adicionadas ao cache: ${addedToCache}`);
+  logger.info(`  Já estavam no cache: ${alreadyInCache}`);
+  logger.info(`  Sem arquivo de saída: ${notFound}`);
+  logger.info(`  Total no cache agora: ${finalStats.completed}`);
+  logger.info("✅ Construção de cache concluída!");
+}
+
+// Função auxiliar para encontrar qualquer arquivo de saída (reutilizada do cache.js)
+function findAnyOutputFile(fileInfo) {
+  const { relativePath, fileName } = fileInfo;
+  const baseName = path.parse(fileName).name;
+  const relativeDir = path.dirname(relativePath);
+  const outputSubDir =
+    relativeDir !== "."
+      ? path.join(config.outputDir, relativeDir)
+      : config.outputDir;
+
+  if (!fs.existsSync(outputSubDir)) {
+    return null;
+  }
+
+  const files = fs.readdirSync(outputSubDir);
+  const extensions = [".png", ".jpg", ".jpeg"];
+
+  for (const file of files) {
+    if (file.startsWith(baseName + " - ")) {
+      const ext = path.extname(file).toLowerCase();
+      if (extensions.includes(ext)) {
+        const outputPath = path.join(outputSubDir, file);
+        if (fs.existsSync(outputPath)) {
+          return outputPath;
+        }
+      }
+    }
+  }
+
+  return null;
+}
+
 // Função de execução principal
 async function run() {
   // Parseia argumentos
@@ -386,6 +565,11 @@ async function run() {
     return;
   }
 
+  if (args.cacheOnly) {
+    await buildCacheOnly(args);
+    return;
+  }
+
   // Garante diretórios necessários
   ensureDirectories();
 
@@ -401,6 +585,15 @@ async function run() {
   // Carrega cache
   logger.info("Carregando cache de processamento...");
   const cache = loadCache();
+
+  // Remove entradas de imagens estáticas do cache (elas não devem ser processadas)
+  const removedStaticCount = removeStaticImagesFromCache(cache);
+  if (removedStaticCount > 0) {
+    logger.warn(
+      `Removidas ${removedStaticCount} entrada(s) de imagens estáticas do cache (elas não devem ser processadas)`
+    );
+  }
+
   const cacheStats = getCacheStats(cache);
   logger.info(
     `Cache carregado: ${cacheStats.completed} imagem(ns) já processada(s)`
@@ -432,10 +625,26 @@ async function run() {
     return;
   }
 
-  metrics.setTotalFiles(totalFiles);
-  logger.info(`Total de arquivos para processar: ${totalFiles}`);
+  // Filtra arquivos pendentes para calcular total real
+  const filesToProcessInitially = args.force
+    ? allImageFiles
+    : allImageFiles.filter(
+        (fileInfo) => !isAlreadyProcessed(fileInfo, args.suffix, false, cache)
+      );
+
+  const totalFilesToProcess = filesToProcessInitially.length;
+  metrics.setTotalFiles(totalFilesToProcess);
+  logger.info(
+    `Total de arquivos para processar: ${totalFilesToProcess} (de ${totalFiles} encontrados)`
+  );
 
   // Processa em lotes até não haver mais arquivos
+  let lastProcessedCount = 0;
+  let lastSkippedCount = 0;
+  let consecutiveEmptyBatches = 0;
+  const MAX_CONSECUTIVE_EMPTY = 3; // Para após 3 batches consecutivos sem processar nada novo
+  let batchCounter = 0; // Contador de batches processados (independente de arquivos processados)
+
   while (true) {
     if (isShuttingDown) {
       logger.warn("Interrupção detectada, parando processamento...");
@@ -452,11 +661,25 @@ async function run() {
       break;
     }
 
-    const batch = currentImageFiles.slice(0, config.batchSize);
-    const batchNumber = Math.floor(metrics.processed / config.batchSize) + 1;
+    // Filtra arquivos que já foram processados (exceto se --force)
+    const filesToProcess = args.force
+      ? currentImageFiles
+      : currentImageFiles.filter(
+          (fileInfo) => !isAlreadyProcessed(fileInfo, args.suffix, false, cache)
+        );
+
+    // Se não há mais arquivos para processar, para o loop
+    if (filesToProcess.length === 0) {
+      logger.info("Todos os arquivos já foram processados. Finalizando...");
+      break;
+    }
+
+    const batch = filesToProcess.slice(0, config.batchSize);
+    batchCounter++;
+    const batchNumber = batchCounter;
 
     logger.info(
-      `Processando batch ${batchNumber} (${batch.length} arquivos)...`
+      `Processando batch ${batchNumber} (${batch.length} arquivos de ${filesToProcess.length} pendentes)...`
     );
 
     const results = await Promise.allSettled(
@@ -474,17 +697,43 @@ async function run() {
 
     let successCount = 0;
     let errorCount = 0;
+    let skippedCount = 0;
 
     results.forEach((result) => {
       if (result.status === "fulfilled") {
+        // Verifica se foi realmente processado ou pulado
+        // (arquivos pulados retornam undefined)
         successCount++;
       } else {
         errorCount++;
       }
     });
 
+    // Conta arquivos pulados comparando métricas antes e depois
+    const currentSkippedCount = metrics.skipped;
+    skippedCount = currentSkippedCount - lastSkippedCount;
+    lastSkippedCount = currentSkippedCount;
+
+    // Verifica se processou algo novo (considera tanto processados quanto pulados)
+    const currentProcessedCount = metrics.processed;
+    const hasProgress =
+      currentProcessedCount !== lastProcessedCount || skippedCount > 0;
+
+    if (!hasProgress) {
+      consecutiveEmptyBatches++;
+      if (consecutiveEmptyBatches >= MAX_CONSECUTIVE_EMPTY) {
+        logger.warn(
+          `Nenhum arquivo novo processado após ${MAX_CONSECUTIVE_EMPTY} batches consecutivos. Finalizando...`
+        );
+        break;
+      }
+    } else {
+      consecutiveEmptyBatches = 0;
+      lastProcessedCount = currentProcessedCount;
+    }
+
     logger.info(
-      `Batch ${batchNumber} concluído: ${successCount} sucessos, ${errorCount} erros`
+      `Batch ${batchNumber} concluído: ${successCount} sucessos, ${errorCount} erros, ${skippedCount} pulados`
     );
 
     // Log de progresso com métricas

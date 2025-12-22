@@ -68,7 +68,23 @@ export async function uploadToUploadThing(imagePath) {
 
     // Verifica se houve erro
     if (response.error) {
-      throw new Error(`Erro no upload: ${response.error.message}`);
+      const errorMessage =
+        response.error.message || JSON.stringify(response.error);
+
+      // Detecta erro específico de cota de armazenamento excedida
+      if (
+        errorMessage.includes("Storage quota exceeded") ||
+        errorMessage.includes("quota exceeded") ||
+        errorMessage.includes("quota")
+      ) {
+        throw new Error(
+          `Cota de armazenamento do UploadThing excedida. ` +
+            `Por favor, libere espaço ou atualize seu plano. ` +
+            `Arquivo: ${fileName}`
+        );
+      }
+
+      throw new Error(`Erro no upload: ${errorMessage}`);
     }
 
     // uploadFiles retorna um array, mesmo para um único arquivo
@@ -86,7 +102,25 @@ export async function uploadToUploadThing(imagePath) {
     logger.debug(`Upload concluído: ${publicUrl}`);
     return publicUrl;
   } catch (error) {
-    logger.error(`Erro ao fazer upload de ${path.basename(imagePath)}: ${error.message}`);
+    const errorMsg = error.message || String(error);
+
+    // Verifica se o erro contém informação sobre cota excedida
+    if (
+      errorMsg.includes("Storage quota exceeded") ||
+      errorMsg.includes("quota exceeded") ||
+      errorMsg.includes("quota")
+    ) {
+      logger.error(
+        `❌ COTA DE ARMAZENAMENTO EXCEDIDA: ${path.basename(imagePath)}\n` +
+          `   A conta do UploadThing atingiu o limite de armazenamento.\n` +
+          `   Ação necessária: Libere espaço ou atualize o plano do UploadThing.`
+      );
+    } else {
+      logger.error(
+        `Erro ao fazer upload de ${path.basename(imagePath)}: ${errorMsg}`
+      );
+    }
+
     throw error;
   } finally {
     releaseRateLimit();
@@ -206,12 +240,16 @@ export async function pollRequestStatus(
         await new Promise((resolve) => setTimeout(resolve, intervalMs));
       } else {
         logger.debug(
-          `Status desconhecido: ${result.status} - Aguardando ${intervalMs / 1000}s...`
+          `Status desconhecido: ${result.status} - Aguardando ${
+            intervalMs / 1000
+          }s...`
         );
         await new Promise((resolve) => setTimeout(resolve, intervalMs));
       }
     } catch (error) {
-      logger.warn(`Erro durante polling (tentativa ${attempt}): ${error.message}`);
+      logger.warn(
+        `Erro durante polling (tentativa ${attempt}): ${error.message}`
+      );
 
       if (attempt === maxAttempts) {
         throw error;
@@ -273,7 +311,9 @@ export async function requestSegmindAPI(payload) {
   } catch (error) {
     if (error.name === "AbortError") {
       throw new Error(
-        `Timeout: A API não respondeu em ${config.requestTimeout / 1000}s na requisição inicial.`
+        `Timeout: A API não respondeu em ${
+          config.requestTimeout / 1000
+        }s na requisição inicial.`
       );
     }
     throw error;
@@ -281,5 +321,3 @@ export async function requestSegmindAPI(payload) {
     releaseRateLimit();
   }
 }
-
-
