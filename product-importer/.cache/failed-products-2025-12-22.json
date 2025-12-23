@@ -1,0 +1,44 @@
+[
+  {
+    "code": "1435",
+    "name": "Brinco Pai Nosso Banh Ouro 18k - Ba545",
+    "error": "Cannot convert undefined or null to object",
+    "timestamp": "2025-12-22T23:06:40.614Z"
+  },
+  {
+    "code": "1473",
+    "name": "Conunto Brinco Coracao Trabalhado Banh Ouro 18k -br6597",
+    "error": "Cannot convert undefined or null to object",
+    "timestamp": "2025-12-22T23:09:20.989Z"
+  },
+  {
+    "code": "85",
+    "name": "Brinco Argola Fios Caracol Torcidos Banh Ouro 18k - B02094",
+    "error": "Cannot convert undefined or null to object",
+    "timestamp": "2025-12-22T23:25:36.984Z"
+  },
+  {
+    "code": "86",
+    "name": "Brinco Argola Fios Caracol Torcidos Rodio Branco - B02094",
+    "error": "Cannot convert undefined or null to object",
+    "timestamp": "2025-12-22T23:49:52.277Z"
+  },
+  {
+    "code": "1022",
+    "name": "Gargantilha Fe Banhado Ouro 18k- Cp7912",
+    "error": "Armazenamento do Uploadthing sem espaço disponível. Erro ao obter presigned URL para 1022-P.png: {\"error\":\"Storage quota exceeded\",\"data\":{\"totalUsage\":2146623140,\"appUsage\":2069727934,\"usageLimit\":2070588442}}",
+    "timestamp": "2025-12-22T23:54:42.044Z"
+  },
+  {
+    "code": "1025",
+    "name": "Colar Gravatinha Ponto Luz Banh Ouro 18k - Cl00204",
+    "error": "Armazenamento do Uploadthing sem espaço disponível. Script interrompido.",
+    "timestamp": "2025-12-22T23:54:42.045Z"
+  },
+  {
+    "code": "1029",
+    "name": "Colar Com 1 Filho (a) Banhado Ouro 18k - 1029",
+    "error": "Armazenamento do Uploadthing sem espaço disponível. Script interrompido.",
+    "timestamp": "2025-12-22T23:54:42.045Z"
+  }
+]

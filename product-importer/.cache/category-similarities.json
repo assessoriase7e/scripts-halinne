@@ -1,0 +1,38 @@
+{
+  "version": "1.0",
+  "lastUpdated": "2025-12-22T23:54:42.081Z",
+  "entries": {
+    "aneis_root": {
+      "newName": "Aneis",
+      "matchedCategoryId": 17,
+      "matchedCategoryName": "Acessorios",
+      "checkedAt": "2025-12-22T22:45:26.300Z"
+    },
+    "aneis prata rodio_parent_17": {
+      "newName": "Aneis Prata Rodio",
+      "parentId": 17,
+      "matchedCategoryId": 18,
+      "matchedCategoryName": "Aneis Ouro",
+      "checkedAt": "2025-12-22T22:49:06.892Z"
+    },
+    "braceletes_root": {
+      "newName": "Braceletes",
+      "matchedCategoryId": 17,
+      "matchedCategoryName": "Acessorios",
+      "checkedAt": "2025-12-22T22:59:30.636Z"
+    },
+    "brincos prata rodio_parent_22": {
+      "newName": "Brincos Prata Rodio",
+      "parentId": 22,
+      "matchedCategoryId": 23,
+      "matchedCategoryName": "Brincos Ouro",
+      "checkedAt": "2025-12-22T23:29:06.188Z"
+    },
+    "colares_root": {
+      "newName": "Colares",
+      "matchedCategoryId": 17,
+      "matchedCategoryName": "Acessorios",
+      "checkedAt": "2025-12-22T23:53:34.814Z"
+    }
+  }
+}

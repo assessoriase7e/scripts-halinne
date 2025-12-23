@@ -1,0 +1,146 @@
+
+========================================
+   ANÁLISE DE PRODUTOS E CATEGORIAS
+========================================
+
+✓ Conectado ao banco de dados
+
+Buscando produtos do banco de dados...
+✓ 705 produtos encontrados
+
+Analisando produtos...
+✓ Análise concluída
+
+============================================================
+ESTATÍSTICAS
+============================================================
+Total de produtos analisados: 705
+Produtos com possíveis problemas: 170
+  - Alta confiança: 0
+  - Média confiança: 125
+  - Baixa confiança: 45
+
+Problemas por categoria:
+  Brincos > Brincos Prata Rodio: 102 produto(s)
+  Brincos > Brincos Ouro: 44 produto(s)
+  Aneis > Aneis Prata Rodio: 22 produto(s)
+  Braceletes > Braceletes Prata Rodio: 1 produto(s)
+  Acessorios > Colares Aco: 1 produto(s)
+
+============================================================
+PRODUTOS COM POSSÍVEIS PROBLEMAS
+============================================================
+
+🟡 MÉDIA CONFIANÇA:
+------------------------------------------------------------
+
+SKU: HLN-478
+Nome: Anel 3 Fios C Esferas Rodio Branco - 0994075
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+
+SKU: HLN-474
+Nome: Anel C Coracao Cheio C Pedra Rodio Branco - An0033z
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+
+SKU: HLN-472
+Nome: Anel Com Zirc Cravejada Rodio Branco - An00152
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+
+SKU: HLN-507
+Nome: Anel Com Zirc Cravejadas Rodio Branco - An0121z
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+
+SKU: HLN-480
+Nome: Anel Coracao Grande Vazado Rodio Branco - 2544070
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+
+SKU: HLN-486
+Nome: Anel Coracao Vazado Peq Rodio Branco - 2544125
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+
+SKU: HLN-496
+Nome: Anel Correntaria Rodio Branco - San2298
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+
+SKU: HLN-482
+Nome: Anel Falange C Coracao Vaz E Cheio Rodio Branco - 7740129
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+
+SKU: HLN-498
+Nome: Anel Falange C Triangulos Rodio Branco - 2544047
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+
+SKU: HLN-504
+Nome: Anel Fio Torcido Rodio Branco - San2237
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+
+SKU: HLN-500
+Nome: Anel Folhas Tipo Falange Rodio Branco - 2544205
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+
+SKU: HLN-464
+Nome: Anel Frente Quad C Zirc Rodio Branco - 2544198
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+
+SKU: HLN-468
+Nome: Anel Grosso Frente Quad Lisa Rodio Branco - San 2289
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+
+SKU: HLN-492
+Nome: Anel Mini Esferas Rodio Branco - 2544182
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+
+SKU: HLN-502
+Nome: Anel Minimalista Rodio Branco - 2544204
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+
+SKU: HLN-462
+Nome: Anel Quadrado Abaulado Liso Rodio Branco - 2544199
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+
+SKU: HLN-470
+Nome: Anel Quadrado C Pedra Cravejada Rodio Branco - San2289
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+
+SKU: HLN-466
+Nome: Anel Quadrado Fino Rodio Branco - San0296
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+
+SKU: HLN-460
+Nome: Anel Quadrado Lis Grosso Rodio Branco - 2540059
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+
+SKU: HLN-509
+Nome: Anel Tipo Falange Rodio Branco - 2544208
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+
+... e mais 105 produto(s) com média confiança
+
+🟢 BAIXA CONFIANÇA (apenas informativo):
+  45 produto(s) com baixa confiança
+  (ver relatório completo para detalhes)
+
+✓ Relatório completo salvo em: C:\Users\lucas\Documents\dev\match-images\category-analysis-2025-12-23.json
+
+✓ Relatório em texto salvo em: C:\Users\lucas\Documents\dev\match-images\category-analysis-2025-12-23.txt
+

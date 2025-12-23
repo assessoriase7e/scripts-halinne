@@ -1,0 +1,1035 @@
+RELATÓRIO DE ANÁLISE DE CATEGORIAS
+============================================================
+
+Data: 2025-12-23T02:18:11.866Z
+Total de produtos: 705
+Produtos com problemas: 170
+
+ESTATÍSTICAS POR CONFIANÇA:
+- Alta: 0
+- Média: 125
+- Baixa: 45
+
+PRODUTOS COM PROBLEMAS:
+============================================================
+
+[MEDIUM] SKU: HLN-478
+Nome: Anel 3 Fios C Esferas Rodio Branco - 0994075
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="anel", Material="rodio", Cat.Tipo="anel", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-474
+Nome: Anel C Coracao Cheio C Pedra Rodio Branco - An0033z
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="anel", Material="rodio", Cat.Tipo="anel", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-472
+Nome: Anel Com Zirc Cravejada Rodio Branco - An00152
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="anel", Material="rodio", Cat.Tipo="anel", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-507
+Nome: Anel Com Zirc Cravejadas Rodio Branco - An0121z
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="anel", Material="rodio", Cat.Tipo="anel", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-480
+Nome: Anel Coracao Grande Vazado Rodio Branco - 2544070
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="anel", Material="rodio", Cat.Tipo="anel", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-486
+Nome: Anel Coracao Vazado Peq Rodio Branco - 2544125
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="anel", Material="rodio", Cat.Tipo="anel", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-496
+Nome: Anel Correntaria Rodio Branco - San2298
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="anel", Material="rodio", Cat.Tipo="anel", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-482
+Nome: Anel Falange C Coracao Vaz E Cheio Rodio Branco - 7740129
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="anel", Material="rodio", Cat.Tipo="anel", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-498
+Nome: Anel Falange C Triangulos Rodio Branco - 2544047
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="anel", Material="rodio", Cat.Tipo="anel", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-504
+Nome: Anel Fio Torcido Rodio Branco - San2237
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="anel", Material="rodio", Cat.Tipo="anel", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-500
+Nome: Anel Folhas Tipo Falange Rodio Branco - 2544205
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="anel", Material="rodio", Cat.Tipo="anel", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-464
+Nome: Anel Frente Quad C Zirc Rodio Branco - 2544198
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="anel", Material="rodio", Cat.Tipo="anel", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-468
+Nome: Anel Grosso Frente Quad Lisa Rodio Branco - San 2289
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="anel", Material="rodio", Cat.Tipo="anel", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-492
+Nome: Anel Mini Esferas Rodio Branco - 2544182
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="anel", Material="rodio", Cat.Tipo="anel", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-502
+Nome: Anel Minimalista Rodio Branco - 2544204
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="anel", Material="rodio", Cat.Tipo="anel", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-462
+Nome: Anel Quadrado Abaulado Liso Rodio Branco - 2544199
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="anel", Material="rodio", Cat.Tipo="anel", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-470
+Nome: Anel Quadrado C Pedra Cravejada Rodio Branco - San2289
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="anel", Material="rodio", Cat.Tipo="anel", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-466
+Nome: Anel Quadrado Fino Rodio Branco - San0296
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="anel", Material="rodio", Cat.Tipo="anel", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-460
+Nome: Anel Quadrado Lis Grosso Rodio Branco - 2540059
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="anel", Material="rodio", Cat.Tipo="anel", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-509
+Nome: Anel Tipo Falange Rodio Branco - 2544208
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="anel", Material="rodio", Cat.Tipo="anel", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-494
+Nome: Anel Trevo C Zirconia Rodio Branco - San2314
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="anel", Material="rodio", Cat.Tipo="anel", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-488
+Nome: Anel Trevo Rodio Branco - San2238
+Categoria: Aneis > Aneis Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="anel", Material="rodio", Cat.Tipo="anel", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-181
+Nome: Bracelete Liso C 2 Esferas Rodio Branco - 0160017
+Categoria: Braceletes > Braceletes Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="N/A", Material="rodio", Cat.Tipo="N/A", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-6
+Nome: Brinco 3 Fios Fino Rodio Branco - Br2037
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-4
+Nome: Brinco 3 Fios Largos Rodio Branco - Ar355
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-26
+Nome: Brinco Arg Aberta C Zirconias Rodio Branco - Br08674
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-24
+Nome: Brinco Arg Com Cavalo Rodio Branco - Ar312
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-44
+Nome: Brinco Arg Frontal Peq C Pedra Rodio Branco - B02008
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-14
+Nome: Brinco Arg Frontal Torcida Peq Rodio Branco - B02014
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-8
+Nome: Brinco Arg Frontal Trab C Pedra Rodio Branco - B01869
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-46
+Nome: Brinco Arg Media Fosca Larga Rodio Branco - Art120
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-62
+Nome: Brinco Arg Quadrada C Perola Rodio Branco - Bc996
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-58
+Nome: Brinco Argola Aberta Grossa Pp Rodio Branco - B385
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-90
+Nome: Brinco Argola Aberta Larga Med Rodio Branco - C01518
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-967
+Nome: Brinco Argola Articulado Liso G Rodio Branco - Brx226g
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-969
+Nome: Brinco Argola Articulado Liso Med Rodio Branco - Brx199
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-112
+Nome: Brinco Argola Correntaria Med Rodio Branco - B020032
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-110
+Nome: Brinco Argola Correntaria P Rodio Branco - B020003
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-88
+Nome: Brinco Argola Dupla Larga Rodio Branco - C01523
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-965
+Nome: Brinco Argola Dupla Trab E Cravejada Rodio Branco- Brx487
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-96
+Nome: Brinco Argola Fio Torto Rodio Branco - B02217
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-94
+Nome: Brinco Argola Fosca Media Fina Rodio Branco - C01382
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-10
+Nome: Brinco Argola Frontal Gd Zirc Rodio Branco - Bn0512
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-98
+Nome: Brinco Argola Geometrica Luxo Rodio Branco - B02282
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-80
+Nome: Brinco Argola Grande C Perolas Rodio Branco - Bc67a
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-78
+Nome: Brinco Argola Grossa Click Rodio Branco - Brc1952
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-64
+Nome: Brinco Argola Larga Torcida Gd Rodio Branco - B02220
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-74
+Nome: Brinco Argola Lisa Torcida Med Rodio Branco - B01850
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-68
+Nome: Brinco Argola Med Fina Trancada Lisa E Trab Rodio Branco - B02268
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-82
+Nome: Brinco Argola Med Larga Aberta Rodio Branco - C01113
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-946
+Nome: Brinco Argola Med Larga Meio Jateado Rodio Branco- Br06197
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-92
+Nome: Brinco Argola Media Lisa Aberta Rodio Branco - B0092
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-40
+Nome: Brinco Argola Media Trabalhada Rodio Branco - B01499
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-76
+Nome: Brinco Argola Oval Pontilhado Rodio Branco - Brc1942
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-84
+Nome: Brinco Argola Peq Trevinhos Rodio Branco - Sbr2339
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-60
+Nome: Brinco Argola Prego  C Pedras Rodio Branco - Bz634
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-963
+Nome: Brinco Argola Torcida Cravejada Rodio Branco - Gfbr700
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-70
+Nome: Brinco Argola Trancada Med Modinha Rodio Branco - B02155
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-54
+Nome: Brinco Argolinha C Estrela C Zirc Rodio Branco - Brp011
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-905
+Nome: Brinco Argolinha Cravejado No Meio Rodio Branco- Br7969
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-52
+Nome: Brinco Argolinha Grossa Click Rodio Branco - Brs154
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-48
+Nome: Brinco Blogueira Rodio Branco - Bf008
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-56
+Nome: Brinco C Esferas Perolas Rodio Branco - Eb951
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-930
+Nome: Brinco Coracao C Zirc E Pedras Palito Rodio Branco - Br6933
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-22
+Nome: Brinco Coracao Cheio Gd Rodio Branco - Tk707
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-1090
+Nome: Brinco Coracao Ponto Luz Gg Rodio Branco- Br05540
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-982
+Nome: Brinco Coracao Vazado Grande Liso Rodio Branco - Br08623
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-907
+Nome: Brinco Coracoes Coloridos Rodio Branco - Br1066
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-972
+Nome: Brinco Cruz Com Pedras Strass Rodio Branco - Br4352
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-38
+Nome: Brinco De Pressao C Zirconia Rodio Branco - Bc842
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-884
+Nome: Brinco Ear Cuff Coracoes Cravejados Rodio Branco- Brx358
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-893
+Nome: Brinco Ear Cuff Elos C Zirconias Rodio Branco - Gfbr605
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-890
+Nome: Brinco Ear Cuff Elos Pedra Vidro Col Rodio Branco- Gfbr605 Vid
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-910
+Nome: Brinco Ear Cuff Ped Palito Color Rodio Branco - Bz551m
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-944
+Nome: Brinco Ear Cuff Trabalhado Rodio Branco - Br08484
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-961
+Nome: Brinco Espirito Santo Rodio Branco - Br01935
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-970
+Nome: Brinco Fe Rodio Branco - Br4350
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-29
+Nome: Brinco Festa Com Pedrarias Rodio Branco - Br6551
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-980
+Nome: Brinco Festa Strass E Malha Rodio Branco - Br6959
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-20
+Nome: Brinco Gd C Perolas Rodio Branco - Ba867
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-942
+Nome: Brinco Gota Chapa Cheia Lisa Grande Rodio Branco - Br07918
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-31
+Nome: Brinco Gota Com Esfera Rodio Branco - Brs1811
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-888
+Nome: Brinco Gota Perola 16x7mm Base Rodio Branco- Gfbr837
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-940
+Nome: Brinco Gota Torta Med Rodio Branco - Br08341
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-934
+Nome: Brinco Gota Torta P Rodio Branco - Br08308
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-932
+Nome: Brinco Gota Torta Pp Rodio Branco - Br08309
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-995
+Nome: Brinco Gota Trabalhado Rodio Branco- Br08419
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-978
+Nome: Brinco Gr Festa C Pedra E Mini Bolinhas Rodio Branco- Br7845
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-974
+Nome: Brinco Grande 3 Fios C Coracao Color Rodio Branco -br6878
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-891
+Nome: Brinco Laco Cravejado Rodio Branco - Brx728
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-886
+Nome: Brinco Liso Com Zirconias Rodio Branco - Gfmd239
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-1113
+Nome: Brinco Luxo Festa C Esferas E Pedras Rodio Branco- 1112
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-34
+Nome: Brinco Meia Arg Cravejado Zirc Rodio Branco - Bf014
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-1014
+Nome: Brinco Mini Cravejado Rodio Branco - Brx328
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-100
+Nome: Brinco Nó Joinha Pequeno Rodio Branco - 2510002
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-901
+Nome: Brinco Organico Grande Liso Aberto Rodio Branco- Br08576
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-899
+Nome: Brinco Organico Grande Luxo Rodio Branco - Br08532
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-868
+Nome: Brinco Organico Laco Grande Rodio Branco - Br0895
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-897
+Nome: Brinco Organico Modinha Medio Rodio Branco - Br08577
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-854
+Nome: Brinco Perola Pendurado C Ponto Luz Rodio Branco -br02108
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-137
+Nome: Brinco Pet Cachorro C Pedra Rodio Branco - Br1052
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-133
+Nome: Brinco Pet Coracao C Patinha Rodio Branco - Br1062
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-135
+Nome: Brinco Pet Gatinho Banhado Rodio Branco - Br1062
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-131
+Nome: Brinco Pet Patinha Fechada Rodio Branco - Br1062
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-1555
+Nome: Brinco Ponto Luz Coracao Rosa Rodio Branco - 1555
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-1104
+Nome: Brinco Ponto Luz Gota  Med Rodio Branco - Br08783
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-1100
+Nome: Brinco Ponto Luz Gota Gd Rodio Branco - Br01268
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-1110
+Nome: Brinco Ponto Luz Quadrado Med Rodio Branco- Br01191
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-1102
+Nome: Brinco Ponto Luz Quadrado Peq Rodio Branco - Br01210
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-1092
+Nome: Brinco Ponto Luz Quadrado Zirc Gg Rodio Branco - Br01193
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-1109
+Nome: Brinco Ponto Luz Red Cristal Rodio Branco - Br01189
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-1096
+Nome: Brinco Ponto Luz Red M Rodio Branco- Br01211 P
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-1094
+Nome: Brinco Ponto Luz Redondo Gg Rodio Branco- Br01206
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-12
+Nome: Brinco Pressao C Perola Rodio Branco - Bc394
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-903
+Nome: Brinco Roganico Grande Liso Fechado Rodio Branco- Br08575
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-1012
+Nome: Brinco Semi Argola Oval Rodio Branco - Gfbr866
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-1106
+Nome: Brincoponto Luz Coracao Gd C Garra Rodio Branco- Br08924
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-1074
+Nome: Trio Brinco Arg Lisa Redonda Articulad Rodio Branco- Brx675
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-1072
+Nome: Trio Brinco Argolinha Cravejada Rodio Branco -br08673
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-1068
+Nome: Trio Brinco Argolinha Cravejada Rodio Branco -br08696
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-1084
+Nome: Trio Brinco Coracao Cristal Rodio Branco - Br06315
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-1080
+Nome: Trio Brinco Coracao Liso Rodio Branco- Brx95
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-1088
+Nome: Trio Brinco Quadrado Cristal Rodio Branco- Br06317
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-127
+Nome: Trio Brincos Coracao Cheio Rodio Branco - Ba643
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[MEDIUM] SKU: HLN-1078
+Nome: Trio Brincos Gravacao Inglesa Rodio Branco- Brx301
+Categoria: Brincos > Brincos Prata Rodio
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("prata")
+Detalhes: Tipo="brinco", Material="rodio", Cat.Tipo="brinco", Cat.Material="prata"
+
+[LOW] SKU: HLN-545
+Nome: Argola Click Lisa Abaul Prata925 - Arg0435
+Categoria: Brincos > Brincos Ouro
+Problema: Material detectado no nome ("prata") não corresponde à categoria ("ouro"); Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="prata", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-519
+Nome: Argola Click Lisa Abaulada M Prata925- Arg0434
+Categoria: Brincos > Brincos Ouro
+Problema: Material detectado no nome ("prata") não corresponde à categoria ("ouro"); Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="prata", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-517
+Nome: Binco Earcuff Coracao Prata925 - Brc1278
+Categoria: Brincos > Brincos Ouro
+Problema: Material detectado no nome ("prata") não corresponde à categoria ("ouro"); Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="prata", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-16
+Nome: Brincp Coracao Gd Liso Rodio Branco - Tk514
+Categoria: Brincos > Brincos Ouro
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("ouro"); Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="rodio", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-800
+Nome: Choker Micangas Acabamento Aco - Ckr64
+Categoria: Acessorios > Colares Aco
+Problema: Categoria indica tipo "colar" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="N/A", Cat.Tipo="colar", Cat.Material="N/A"
+
+[LOW] SKU: HLN-1717
+Nome: Piercing Coracao Zirconia 4mm Prata925- Pirpg17mr
+Categoria: Brincos > Brincos Ouro
+Problema: Material detectado no nome ("prata") não corresponde à categoria ("ouro"); Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="prata", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-1719
+Nome: Piercing Cravacao Inglesa Red Prata925- Pirpg319mr
+Categoria: Brincos > Brincos Ouro
+Problema: Material detectado no nome ("prata") não corresponde à categoria ("ouro"); Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="prata", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-1718
+Nome: Piercing Curva Cravacao Inglesa Prata925- Pirpg268mr
+Categoria: Brincos > Brincos Ouro
+Problema: Material detectado no nome ("prata") não corresponde à categoria ("ouro"); Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="prata", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-1714
+Nome: Piercing Estilo Raio Cravejado Prata925- Pir0016mr
+Categoria: Brincos > Brincos Ouro
+Problema: Material detectado no nome ("prata") não corresponde à categoria ("ouro"); Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="prata", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-35
+Nome: Piercing Fake 2 Fios Largos Banh Ouro 18k - P1
+Categoria: Brincos > Brincos Ouro
+Problema: Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="ouro", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-36
+Nome: Piercing Fake 2 Fios Largos Rodio Branco - P1
+Categoria: Brincos > Brincos Ouro
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("ouro"); Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="rodio", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-32
+Nome: Piercing Fake 4 Fios Banh Ouro 18k - P2
+Categoria: Brincos > Brincos Ouro
+Problema: Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="ouro", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-33
+Nome: Piercing Fake 4 Fios Rodio Branco - P2
+Categoria: Brincos > Brincos Ouro
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("ouro"); Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="rodio", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-571
+Nome: Piercing Fake Bolas Triplo Prata925 - Prg0012
+Categoria: Brincos > Brincos Ouro
+Problema: Material detectado no nome ("prata") não corresponde à categoria ("ouro"); Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="prata", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-1528
+Nome: Piercing Fake C Ping Coracao Banh Ouro 18k- Br06034
+Categoria: Brincos > Brincos Ouro
+Problema: Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="ouro", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-107
+Nome: Piercing Fake Com Elos Meio Banh Ouro 18k - Sbr2257
+Categoria: Brincos > Brincos Ouro
+Problema: Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="ouro", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-108
+Nome: Piercing Fake Com Elos Meio Rodio Branco - Sbr2257
+Categoria: Brincos > Brincos Ouro
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("ouro"); Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="rodio", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-1527
+Nome: Piercing Fake Coracao Cravejado Banh Ouro 18k- Br6608
+Categoria: Brincos > Brincos Ouro
+Problema: Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="ouro", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-1059
+Nome: Piercing Fake Coracao Duplo Banh Ouro 18k- Brx517
+Categoria: Brincos > Brincos Ouro
+Problema: Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="ouro", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-1060
+Nome: Piercing Fake Coracao Duplo Rodio Branco- Brx517
+Categoria: Brincos > Brincos Ouro
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("ouro"); Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="rodio", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-1530
+Nome: Piercing Fake Coracao Vazado Banh Ouro 18k- Br05648
+Categoria: Brincos > Brincos Ouro
+Problema: Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="ouro", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-101
+Nome: Piercing Fake Correntaria Banho Ouro 18k -b01917
+Categoria: Brincos > Brincos Ouro
+Problema: Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="ouro", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-102
+Nome: Piercing Fake Correntaria Rodio Branco - B01917
+Categoria: Brincos > Brincos Ouro
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("ouro"); Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="rodio", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-1065
+Nome: Piercing Fake Cravej E Palitos Banh Ouro 18k- Brx130
+Categoria: Brincos > Brincos Ouro
+Problema: Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="ouro", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-1066
+Nome: Piercing Fake Cravej E Palitos Rodio Branco- Brx130
+Categoria: Brincos > Brincos Ouro
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("ouro"); Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="rodio", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-1061
+Nome: Piercing Fake Em X Pedras Coloridas Banh Ouro 18k- Brx97
+Categoria: Brincos > Brincos Ouro
+Problema: Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="ouro", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-105
+Nome: Piercing Fake Fio Duplo Trab Banh Ouro 18k - Sbr2300
+Categoria: Brincos > Brincos Ouro
+Problema: Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="ouro", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-106
+Nome: Piercing Fake Fio Duplo Trab Rodio Branco - Sbr2300
+Categoria: Brincos > Brincos Ouro
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("ouro"); Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="rodio", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-41
+Nome: Piercing Fake Grosso Banh Ouro 18k - P6
+Categoria: Brincos > Brincos Ouro
+Problema: Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="ouro", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-42
+Nome: Piercing Fake Grosso Rodio Branco - P6
+Categoria: Brincos > Brincos Ouro
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("ouro"); Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="rodio", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-1531
+Nome: Piercing Fake Liso Banh Ouro 18k- Br4802
+Categoria: Brincos > Brincos Ouro
+Problema: Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="ouro", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-1529
+Nome: Piercing Fake Luxo Cravejado Banh Ouro 18k- Br05952
+Categoria: Brincos > Brincos Ouro
+Problema: Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="ouro", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-1532
+Nome: Piercing Fake Meio Torcido Banh Ouro 18k - Br06531
+Categoria: Brincos > Brincos Ouro
+Problema: Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="ouro", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-523
+Nome: Piercing Fake Oval Vazado Prata925 - Prg0162
+Categoria: Brincos > Brincos Ouro
+Problema: Material detectado no nome ("prata") não corresponde à categoria ("ouro"); Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="prata", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-1062
+Nome: Piercing Fake Pedras Color Rodio Branco - Brx97
+Categoria: Brincos > Brincos Ouro
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("ouro"); Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="rodio", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-104
+Nome: Piercing Fake Torcido Rodio Branco - B01992
+Categoria: Brincos > Brincos Ouro
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("ouro"); Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="rodio", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-1064
+Nome: Piercing Fake Zirc Cravej Rodio Branco - Brx103
+Categoria: Brincos > Brincos Ouro
+Problema: Material detectado no nome ("rodio") não corresponde à categoria ("ouro"); Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="rodio", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-1716
+Nome: Piercing Mamilo Cravejado Prata925- Pirpg174mr
+Categoria: Brincos > Brincos Ouro
+Problema: Material detectado no nome ("prata") não corresponde à categoria ("ouro"); Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="prata", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-1756
+Nome: Piercing Nariz Argolinha 10mm Prata925- Prg354
+Categoria: Brincos > Brincos Ouro
+Problema: Material detectado no nome ("prata") não corresponde à categoria ("ouro"); Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="prata", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-1715
+Nome: Piercing Reto Zirconia Gota Prata 925-pir0035mr
+Categoria: Brincos > Brincos Ouro
+Problema: Material detectado no nome ("prata") não corresponde à categoria ("ouro"); Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="prata", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-1720
+Nome: Piercing Zirconia Estrela 4mm Prata925- Pirpg47mr
+Categoria: Brincos > Brincos Ouro
+Problema: Material detectado no nome ("prata") não corresponde à categoria ("ouro"); Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="prata", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-1220
+Nome: Pircing Fake Colorido Prat925- Bb31692jl
+Categoria: Brincos > Brincos Ouro
+Problema: Material detectado no nome ("prata") não corresponde à categoria ("ouro"); Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="prata", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-1722
+Nome: Trio Argolinha Trab Frente Prata 925-tr0013mr
+Categoria: Brincos > Brincos Ouro
+Problema: Material detectado no nome ("prata") não corresponde à categoria ("ouro"); Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="prata", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-1710
+Nome: Trio Argolinhas Cravejadas Prata 925- Bg912tr
+Categoria: Brincos > Brincos Ouro
+Problema: Material detectado no nome ("prata") não corresponde à categoria ("ouro"); Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="prata", Cat.Tipo="brinco", Cat.Material="ouro"
+
+[LOW] SKU: HLN-1199
+Nome: Trio De Argola Cravej Colorido Prat925-bb39085pjl
+Categoria: Brincos > Brincos Ouro
+Problema: Material detectado no nome ("prata") não corresponde à categoria ("ouro"); Categoria indica tipo "brinco" mas nome do produto não menciona tipo
+Detalhes: Tipo="N/A", Material="prata", Cat.Tipo="brinco", Cat.Material="ouro"
+
