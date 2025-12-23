@@ -16,6 +16,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import * as fs from "fs/promises";
 import * as path from "path";
 import * as readline from "readline";
+import * as crypto from "crypto";
 import { fileURLToPath } from "url";
 import { markdownToHtml } from "./markdown-to-html";
 
@@ -40,7 +41,12 @@ const CONFIG = {
   STATUS: "active",
   CACHE_FILE: path.join(SCRIPT_DIR, ".cache/product-descriptions.json"),
   CATEGORY_CACHE_FILE: path.join(SCRIPT_DIR, ".cache/product-categories.json"),
-  INPUT_FOLDER: path.join(SCRIPT_DIR, "data/input/imagens-separadas-01"),
+  CATEGORY_SIMILARITY_CACHE_FILE: path.join(
+    SCRIPT_DIR,
+    ".cache/category-similarities.json"
+  ),
+  IMAGE_UPLOAD_CACHE_FILE: path.join(SCRIPT_DIR, ".cache/image-uploads.json"),
+  INPUT_FOLDER: path.join(SCRIPT_DIR, "data/input"),
   CSV_FOLDER: path.join(SCRIPT_DIR, "data/table"),
   // Regex para identificar a imagem principal (case insensitive)
   // Exemplos: "1054-p.png", "1054-P.jpg", "1054_p.png"
@@ -49,6 +55,9 @@ const CONFIG = {
 
 // Prisma client com DATABASE_URL customizada
 let prisma: PrismaClient;
+
+// Flag global para controlar parada por falta de armazenamento
+let storageQuotaExceeded = false;
 
 // ============================================================================
 // TIPOS
@@ -102,6 +111,36 @@ interface CategoryCacheFile {
   entries: Record<string, CategoryCacheEntry>;
 }
 
+interface CategorySimilarityCacheEntry {
+  newName: string;
+  parentId?: number;
+  matchedCategoryId: number;
+  matchedCategoryName: string;
+  checkedAt: string;
+}
+
+interface CategorySimilarityCacheFile {
+  version: string;
+  lastUpdated: string;
+  entries: Record<string, CategorySimilarityCacheEntry>;
+}
+
+interface ImageUploadCacheEntry {
+  hash: string;
+  url: string;
+  fileKey: string;
+  uploadedAt: string;
+  fileSize: number;
+  fileName: string;
+}
+
+interface ImageUploadCacheFile {
+  version: string;
+  lastUpdated: string;
+  entries: Record<string, ImageUploadCacheEntry>; // hash -> entry
+  urlToHash: Record<string, string>; // url -> hash (para busca reversa)
+}
+
 interface CLIArgs {
   refreshCache: boolean;
   refreshCodes?: string[];
@@ -113,6 +152,8 @@ interface CLIArgs {
   help: boolean;
   limit?: number;
   yes: boolean;
+  cleanupOrphans: boolean;
+  buildImageCache: boolean;
 }
 
 // ============================================================================
@@ -143,6 +184,8 @@ function parseArgs(): CLIArgs {
     force: false,
     help: false,
     yes: false,
+    cleanupOrphans: false,
+    buildImageCache: false,
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -174,6 +217,10 @@ function parseArgs(): CLIArgs {
       result.limit = parseInt(arg.split("=")[1], 10);
     } else if (arg === "--yes" || arg === "-y") {
       result.yes = true;
+    } else if (arg === "--cleanup-orphans") {
+      result.cleanupOrphans = true;
+    } else if (arg === "--build-image-cache") {
+      result.buildImageCache = true;
     }
   }
 
@@ -203,6 +250,8 @@ OPÇÕES:
   --openai-model=MODEL    Define modelo OpenAI (padrão: gpt-4o-mini)
   --folder-path=PATH      Caminho customizado para imagens
   --limit=N               Limita quantidade de produtos a processar
+  --cleanup-orphans       Remove arquivos órfãos do Uploadthing
+  --build-image-cache     Constrói cache inicial das imagens do banco
 
 ESTRUTURA DE PASTA:
   data/input/imagens-separadas-01/
@@ -276,9 +325,22 @@ async function parseCSV(filePath: string): Promise<CSVRecord[]> {
       record.Código = record.Código.replace(/[\t\s]+/g, "").trim();
     }
 
-    if (record.Código && record.Descrição) {
-      records.push(record);
+    // Validação: código e descrição são obrigatórios
+    if (!record.Código || record.Código.length === 0) {
+      continue; // Pular registro sem código
     }
+
+    if (!record.Descrição || record.Descrição.trim().length === 0) {
+      continue; // Pular registro sem descrição
+    }
+
+    // Validação: código deve ser alfanumérico (permite hífen e underscore)
+    if (!/^[a-zA-Z0-9_-]+$/.test(record.Código)) {
+      log(`Código inválido no CSV, pulando: ${record.Código}`);
+      continue;
+    }
+
+    records.push(record);
   }
 
   return records;
@@ -360,6 +422,340 @@ async function saveCategoryCache(cache: CategoryCacheFile): Promise<void> {
   log("Cache de categorias salvo");
 }
 
+async function loadSimilarityCache(): Promise<CategorySimilarityCacheFile> {
+  try {
+    const content = await fs.readFile(
+      CONFIG.CATEGORY_SIMILARITY_CACHE_FILE,
+      "utf-8"
+    );
+    return JSON.parse(content);
+  } catch {
+    return {
+      version: "1.0",
+      lastUpdated: new Date().toISOString(),
+      entries: {},
+    };
+  }
+}
+
+async function saveSimilarityCache(
+  cache: CategorySimilarityCacheFile
+): Promise<void> {
+  const dir = path.dirname(CONFIG.CATEGORY_SIMILARITY_CACHE_FILE);
+  await fs.mkdir(dir, { recursive: true });
+  await fs.writeFile(
+    CONFIG.CATEGORY_SIMILARITY_CACHE_FILE,
+    JSON.stringify(cache, null, 2),
+    "utf-8"
+  );
+  log("Cache de similaridades de categorias salvo");
+}
+
+async function loadImageUploadCache(): Promise<ImageUploadCacheFile> {
+  try {
+    const content = await fs.readFile(CONFIG.IMAGE_UPLOAD_CACHE_FILE, "utf-8");
+    return JSON.parse(content);
+  } catch {
+    return {
+      version: "1.0",
+      lastUpdated: new Date().toISOString(),
+      entries: {},
+      urlToHash: {},
+    };
+  }
+}
+
+async function saveImageUploadCache(
+  cache: ImageUploadCacheFile
+): Promise<void> {
+  const dir = path.dirname(CONFIG.IMAGE_UPLOAD_CACHE_FILE);
+  await fs.mkdir(dir, { recursive: true });
+  await fs.writeFile(
+    CONFIG.IMAGE_UPLOAD_CACHE_FILE,
+    JSON.stringify(cache, null, 2),
+    "utf-8"
+  );
+  log("Cache de uploads de imagens salvo");
+}
+
+/**
+ * Calcula o hash MD5 do conteúdo de um arquivo
+ */
+async function calculateFileHash(filePath: string): Promise<string> {
+  const buffer = await fs.readFile(filePath);
+  return crypto.createHash("md5").update(buffer).digest("hex");
+}
+
+/**
+ * Extrai o fileKey de uma URL do Uploadthing
+ * Exemplos:
+ * - https://utfs.io/f/abc123 -> abc123
+ * - https://uploadthing.com/f/abc123 -> abc123
+ * - https://uploadthing-prod.s3.us-west-2.amazonaws.com/abc123 -> abc123
+ */
+function extractFileKeyFromUrl(url: string): string | null {
+  // Padrões comuns de URLs do Uploadthing
+  const patterns = [
+    /\/f\/([a-zA-Z0-9_-]+)/, // /f/fileKey
+    /utfs\.io\/f\/([a-zA-Z0-9_-]+)/, // utfs.io/f/fileKey
+    /uploadthing.*\/([a-zA-Z0-9_-]+)(?:\?|$)/, // uploadthing.com/path/fileKey ou uploadthing-prod.s3.../fileKey
+  ];
+
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match && match[1]) {
+      return match[1];
+    }
+  }
+
+  // Tentar extrair da última parte do path se não encontrou padrão
+  try {
+    const urlObj = new URL(url);
+    const pathParts = urlObj.pathname.split("/").filter((p) => p);
+    if (pathParts.length > 0) {
+      const lastPart = pathParts[pathParts.length - 1];
+      // Se parece com um fileKey (alphanumeric + underscore/hyphen, sem extensão comum)
+      if (
+        /^[a-zA-Z0-9_-]+$/.test(lastPart) &&
+        !lastPart.match(/\.(jpg|jpeg|png|gif|webp)$/i)
+      ) {
+        return lastPart;
+      }
+    }
+  } catch {
+    // URL inválida, ignorar
+  }
+
+  return null;
+}
+
+/**
+ * Constrói cache inicial de imagens consultando o banco de dados
+ * Mapeia URLs já cadastradas para evitar uploads duplicados
+ */
+async function buildImageCacheFromDatabase(): Promise<void> {
+  log("Construindo cache inicial de imagens do banco de dados...");
+
+  const cache = await loadImageUploadCache();
+  let addedCount = 0;
+  let skippedCount = 0;
+
+  // Buscar todas as imagens do banco
+  const images = await prisma.image.findMany({
+    where: {
+      isDeleted: false,
+      product: {
+        isDeleted: false,
+        storeId: CONFIG.STORE_ID,
+      },
+    },
+    select: {
+      url: true,
+      createdAt: true,
+    },
+  });
+
+  log(`Encontradas ${images.length} imagens no banco de dados`);
+
+  for (const image of images) {
+    // Se a URL já está no cache, pular
+    if (cache.urlToHash[image.url]) {
+      skippedCount++;
+      continue;
+    }
+
+    // Extrair fileKey da URL
+    const fileKey = extractFileKeyFromUrl(image.url);
+    if (!fileKey) {
+      log(`Não foi possível extrair fileKey da URL: ${image.url}`);
+      skippedCount++;
+      continue;
+    }
+
+    // Criar hash baseado na URL (já que não temos o arquivo original)
+    // Usaremos o fileKey como identificador único
+    const hash = crypto.createHash("md5").update(image.url).digest("hex");
+
+    cache.entries[hash] = {
+      hash,
+      url: image.url,
+      fileKey,
+      uploadedAt: image.createdAt.toISOString(),
+      fileSize: 0, // Não temos o tamanho original
+      fileName: `cached-${fileKey}`,
+    };
+
+    cache.urlToHash[image.url] = hash;
+    addedCount++;
+  }
+
+  cache.lastUpdated = new Date().toISOString();
+  await saveImageUploadCache(cache);
+
+  log(
+    `Cache de imagens atualizado: ${addedCount} novas entradas, ${skippedCount} já existentes`
+  );
+}
+
+/**
+ * Identifica e remove arquivos órfãos do Uploadthing
+ * Arquivos órfãos são aqueles que não estão mais referenciados no banco de dados
+ */
+async function cleanupOrphanedFiles(dryRun: boolean = false): Promise<void> {
+  if (!CONFIG.UPLOADTHING_TOKEN) {
+    throw new Error(
+      "PRODUCT_IMPORTER_UPLOADTHING_TOKEN não configurado - obrigatório para limpeza"
+    );
+  }
+
+  log("Identificando arquivos órfãos no Uploadthing...");
+
+  const { apiKey } = decodeUploadthingToken(CONFIG.UPLOADTHING_TOKEN);
+
+  // Buscar todas as URLs de imagens do banco de dados
+  const images = await prisma.image.findMany({
+    where: {
+      isDeleted: false,
+      product: {
+        isDeleted: false,
+        storeId: CONFIG.STORE_ID,
+      },
+    },
+    select: {
+      url: true,
+    },
+  });
+
+  const validUrls = new Set(images.map((img) => img.url));
+  log(`Encontradas ${validUrls.size} imagens válidas no banco de dados`);
+
+  // Carregar cache de uploads
+  const cache = await loadImageUploadCache();
+  const orphanedEntries: ImageUploadCacheEntry[] = [];
+
+  // Verificar cada entrada do cache
+  for (const [hash, entry] of Object.entries(cache.entries)) {
+    if (!validUrls.has(entry.url)) {
+      orphanedEntries.push(entry);
+    }
+  }
+
+  log(`Encontrados ${orphanedEntries.length} arquivos órfãos no cache`);
+
+  if (orphanedEntries.length === 0) {
+    log("Nenhum arquivo órfão encontrado!");
+    return;
+  }
+
+  if (dryRun) {
+    console.log("\n[DRY RUN] Arquivos órfãos que seriam deletados:");
+    orphanedEntries.forEach((entry, index) => {
+      console.log(
+        `${index + 1}. ${entry.fileName} (${entry.fileKey}) - ${entry.url}`
+      );
+    });
+    return;
+  }
+
+  // Tentar deletar arquivos órfãos do Uploadthing
+  let deletedCount = 0;
+  let failedCount = 0;
+  let skippedCount = 0;
+
+  for (const entry of orphanedEntries) {
+    try {
+      // Tentar deletar via API do Uploadthing
+      // Nota: A API pode não ter endpoint público para deletar, mas tentamos diferentes endpoints
+      const endpoints = [
+        "https://api.uploadthing.com/v6/deleteFile",
+        "https://api.uploadthing.com/v6/files/delete",
+        "https://api.uploadthing.com/v6/delete",
+      ];
+
+      let deleted = false;
+      for (const endpoint of endpoints) {
+        try {
+          const deleteResponse = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-uploadthing-api-key": apiKey,
+              "x-uploadthing-version": "7.0.0",
+            },
+            body: JSON.stringify({
+              fileKey: entry.fileKey,
+            }),
+          });
+
+          if (deleteResponse.ok) {
+            // Remover do cache
+            delete cache.entries[entry.hash];
+            delete cache.urlToHash[entry.url];
+            deletedCount++;
+            log(`Arquivo deletado: ${entry.fileKey}`);
+            deleted = true;
+            break;
+          } else if (deleteResponse.status === 404) {
+            // Arquivo já não existe, remover do cache mesmo assim
+            delete cache.entries[entry.hash];
+            delete cache.urlToHash[entry.url];
+            deletedCount++;
+            log(`Arquivo já não existe (removido do cache): ${entry.fileKey}`);
+            deleted = true;
+            break;
+          }
+        } catch (endpointError) {
+          // Tentar próximo endpoint
+          continue;
+        }
+      }
+
+      if (!deleted) {
+        // Se nenhum endpoint funcionou, apenas remover do cache local
+        // (o arquivo pode continuar no Uploadthing, mas não será mais referenciado)
+        delete cache.entries[entry.hash];
+        delete cache.urlToHash[entry.url];
+        skippedCount++;
+        log(
+          `Não foi possível deletar ${entry.fileKey} via API (removido do cache local apenas)`
+        );
+      }
+    } catch (error) {
+      logError(`Erro ao processar arquivo órfão ${entry.fileKey}`, error);
+      failedCount++;
+    }
+  }
+
+  // Salvar cache atualizado
+  cache.lastUpdated = new Date().toISOString();
+  await saveImageUploadCache(cache);
+
+  log(
+    `Limpeza concluída: ${deletedCount} deletados/removidos do cache, ${skippedCount} removidos apenas do cache local, ${failedCount} falhas`
+  );
+
+  if (skippedCount > 0) {
+    console.log(
+      "\n⚠️  Nota: Alguns arquivos não puderam ser deletados via API do Uploadthing."
+    );
+    console.log(
+      "   Eles foram removidos do cache local, mas podem ainda existir no Uploadthing."
+    );
+    console.log(
+      "   Considere deletá-los manualmente pelo painel do Uploadthing se necessário.\n"
+    );
+  }
+}
+
+/**
+ * Gera uma chave única para o cache de similaridade baseada no nome e parentId
+ */
+function getSimilarityCacheKey(name: string, parentId?: number): string {
+  const normalizedName = name.toLowerCase().trim();
+  const parentKey = parentId !== undefined ? `_parent_${parentId}` : "_root";
+  return `${normalizedName}${parentKey}`;
+}
+
 async function scanProductFolders(
   inputFolder: string
 ): Promise<Array<{ category: string; subcategory: string; folder: string }>> {
@@ -369,25 +765,64 @@ async function scanProductFolders(
     folder: string;
   }> = [];
 
+  // Validação: pasta de entrada deve existir
+  try {
+    const inputStat = await fs.stat(inputFolder);
+    if (!inputStat.isDirectory()) {
+      throw new Error(`Caminho de entrada não é uma pasta: ${inputFolder}`);
+    }
+  } catch (error) {
+    throw new Error(
+      `Erro ao acessar pasta de entrada ${inputFolder}: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
+
   const categoryFolders = await fs.readdir(inputFolder);
 
   for (const catFolder of categoryFolders) {
+    // Ignorar arquivos ocultos e arquivos de sistema
+    if (catFolder.startsWith(".")) continue;
+
     const categoryPath = path.join(inputFolder, catFolder);
-    const stat = await fs.stat(categoryPath);
 
-    if (!stat.isDirectory()) continue;
+    try {
+      const stat = await fs.stat(categoryPath);
+      if (!stat.isDirectory()) {
+        log(`Item não é uma pasta, pulando: ${catFolder}`);
+        continue;
+      }
 
-    const catInfo = extractCategoryInfo(catFolder);
-    if (!catInfo) {
-      log(`Pasta mal formatada, pulando: ${catFolder}`);
+      // Validação: formato da pasta deve ser [categoria][subcategoria]
+      const catInfo = extractCategoryInfo(catFolder);
+      if (!catInfo) {
+        log(
+          `Pasta mal formatada (deve ser [categoria][subcategoria]), pulando: ${catFolder}`
+        );
+        continue;
+      }
+
+      // Validação: categoria e subcategoria não podem ser vazias
+      if (!catInfo.category || catInfo.category.trim().length === 0) {
+        log(`Categoria vazia na pasta ${catFolder}, pulando`);
+        continue;
+      }
+
+      if (!catInfo.subcategory || catInfo.subcategory.trim().length === 0) {
+        log(`Subcategoria vazia na pasta ${catFolder}, pulando`);
+        continue;
+      }
+
+      result.push({
+        category: catInfo.category,
+        subcategory: catInfo.subcategory,
+        folder: categoryPath,
+      });
+    } catch (error) {
+      logError(`Erro ao processar pasta ${catFolder}`, error);
       continue;
     }
-
-    result.push({
-      category: catInfo.category,
-      subcategory: catInfo.subcategory,
-      folder: categoryPath,
-    });
   }
 
   return result;
@@ -399,21 +834,53 @@ async function getProductFolders(
   const products: Array<{ code: string; path: string; imageCount: number }> =
     [];
 
+  // Validação: categoria deve existir
+  try {
+    const catStat = await fs.stat(categoryPath);
+    if (!catStat.isDirectory()) {
+      log(`Caminho de categoria não é uma pasta: ${categoryPath}`);
+      return products;
+    }
+  } catch (error) {
+    logError(`Erro ao acessar pasta de categoria ${categoryPath}`, error);
+    return products;
+  }
+
   const items = await fs.readdir(categoryPath);
 
   for (const item of items) {
+    // Ignorar arquivos ocultos e arquivos de sistema
+    if (item.startsWith(".")) continue;
+
     const itemPath = path.join(categoryPath, item);
-    const stat = await fs.stat(itemPath);
 
-    if (!stat.isDirectory()) continue;
+    try {
+      const stat = await fs.stat(itemPath);
+      if (!stat.isDirectory()) {
+        log(`Item não é uma pasta, pulando: ${item}`);
+        continue;
+      }
 
-    const images = await fs.readdir(itemPath);
-    const imageCount = images.filter((img) =>
-      /\.(jpg|jpeg|png|gif|webp)$/i.test(img)
-    ).length;
+      // Validação: código do produto não pode ser vazio
+      const code = item.trim();
+      if (!code || code.length === 0) {
+        log(`Código vazio na pasta ${itemPath}, pulando`);
+        continue;
+      }
 
-    if (imageCount > 0) {
-      products.push({ code: item, path: itemPath, imageCount });
+      const images = await fs.readdir(itemPath);
+      const imageCount = images.filter((img) =>
+        /\.(jpg|jpeg|png|gif|webp)$/i.test(img)
+      ).length;
+
+      if (imageCount > 0) {
+        products.push({ code, path: itemPath, imageCount });
+      } else {
+        log(`Pasta de produto sem imagens válidas: ${code}`);
+      }
+    } catch (error) {
+      logError(`Erro ao processar pasta de produto ${item}`, error);
+      continue;
     }
   }
 
@@ -421,34 +888,114 @@ async function getProductFolders(
 }
 
 /**
- * Ordena as imagens colocando a principal primeiro.
- * A imagem principal é identificada pela regex CONFIG.MAIN_IMAGE_REGEX
- * Por padrão: arquivos terminando em "-p" (ex: "1054-p.png", "1054-P.jpg")
+ * Calcula a prioridade de uma imagem para ordenação.
+ * Retorna um número menor para maior prioridade.
+ *
+ * Prioridades (menor = maior prioridade):
+ * 1. Arquivos com padrão -p (ex: "1054-p.png")
+ * 2. Arquivo base sem variações (ex: "1287.png")
+ * 3. Variações sem sufixos adicionais (ex: "1287-V1-PRETO.png")
+ * 4. Variações com sufixos adicionais (ex: "1287-V1-PRETO-AD1.png")
+ * 5. Outros arquivos
  */
-function sortImagesWithMainFirst(imagePaths: string[]): string[] {
+function getImagePriority(fileName: string, productCode: string): number {
+  const baseName = path.basename(fileName, path.extname(fileName));
+
+  // Prioridade 1: Arquivos com padrão -p (case insensitive)
+  if (CONFIG.MAIN_IMAGE_REGEX.test(fileName)) {
+    return 1;
+  }
+
+  // Prioridade 2: Arquivo base sem variações (ex: "1287.png")
+  // Verifica se o nome do arquivo é exatamente o código do produto
+  if (baseName === productCode) {
+    return 2;
+  }
+
+  // Prioridade 3: Variações sem sufixos adicionais
+  // Padrão: código-V[numero]-[cor] (ex: "1287-V1-PRETO.png")
+  // Não deve ter sufixos como -AD1, -AD2, etc.
+  const variationPattern = new RegExp(`^${productCode}-V\\d+-[A-Z]+$`, "i");
+  if (variationPattern.test(baseName)) {
+    return 3;
+  }
+
+  // Prioridade 4: Variações com sufixos adicionais (ex: "1287-V1-PRETO-AD1.png")
+  const variationWithSuffixPattern = new RegExp(
+    `^${productCode}-V\\d+-[A-Z]+-`,
+    "i"
+  );
+  if (variationWithSuffixPattern.test(baseName)) {
+    return 4;
+  }
+
+  // Prioridade 5: Outros arquivos
+  return 5;
+}
+
+/**
+ * Ordena as imagens colocando a principal primeiro.
+ *
+ * Estratégia de ordenação:
+ * 1. Primeiro: arquivos com padrão -p (ex: "1054-p.png")
+ * 2. Segundo: arquivo base sem variações (ex: "1287.png")
+ * 3. Terceiro: variações sem sufixos (ex: "1287-V1-PRETO.png")
+ * 4. Quarto: variações com sufixos (ex: "1287-V1-PRETO-AD1.png")
+ * 5. Último: outros arquivos
+ *
+ * Dentro de cada grupo, ordena alfabeticamente para consistência.
+ */
+function sortImagesWithMainFirst(
+  imagePaths: string[],
+  productCode: string
+): string[] {
+  if (imagePaths.length === 0) {
+    return imagePaths;
+  }
+
   const sorted = [...imagePaths].sort((a, b) => {
     const fileNameA = path.basename(a);
     const fileNameB = path.basename(b);
 
-    // A imagem principal é a que corresponde à regex configurada
-    const isMainA = CONFIG.MAIN_IMAGE_REGEX.test(fileNameA);
-    const isMainB = CONFIG.MAIN_IMAGE_REGEX.test(fileNameB);
+    // Obter prioridades
+    const priorityA = getImagePriority(fileNameA, productCode);
+    const priorityB = getImagePriority(fileNameB, productCode);
 
-    if (isMainA && !isMainB) return -1; // A vem primeiro
-    if (!isMainA && isMainB) return 1; // B vem primeiro
-    return 0; // Mantém ordem original
+    // Ordenar por prioridade primeiro
+    if (priorityA !== priorityB) {
+      return priorityA - priorityB;
+    }
+
+    // Se mesma prioridade, ordenar alfabeticamente para consistência
+    return fileNameA.localeCompare(fileNameB);
   });
 
   // Log sobre qual é a imagem principal
   const mainImage = sorted[0];
   const mainFileName = path.basename(mainImage);
-  if (CONFIG.MAIN_IMAGE_REGEX.test(mainFileName)) {
-    log(`Imagem principal identificada: ${mainFileName}`);
-  } else {
-    log(
-      `Nenhuma imagem principal encontrada (regex: ${CONFIG.MAIN_IMAGE_REGEX}), usando: ${mainFileName}`
-    );
+  const mainPriority = getImagePriority(mainFileName, productCode);
+
+  let priorityDescription = "";
+  switch (mainPriority) {
+    case 1:
+      priorityDescription = "padrão -p";
+      break;
+    case 2:
+      priorityDescription = "arquivo base sem variações";
+      break;
+    case 3:
+      priorityDescription = "variação sem sufixos adicionais";
+      break;
+    case 4:
+      priorityDescription = "variação com sufixos adicionais";
+      break;
+    default:
+      priorityDescription = "outro arquivo";
   }
+
+  log(
+    `Imagem principal identificada: ${mainFileName} (${priorityDescription})`
+  );
 
   return sorted;
 }
@@ -728,7 +1275,9 @@ Retorne apenas o JSON:
       );
 
       if (!response.ok) {
-        const error = await response.json();
+        const error = (await response.json()) as {
+          error?: { message?: string };
+        };
         throw new Error(
           `OpenAI API error: ${error.error?.message || response.statusText}`
         );
@@ -853,6 +1402,110 @@ async function getOrGenerateDescriptions(
 // ============================================================================
 
 /**
+ * Classe de erro customizada para indicar falta de armazenamento
+ */
+class StorageQuotaExceededError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "StorageQuotaExceededError";
+  }
+}
+
+/**
+ * Verifica se um erro da API do Uploadthing indica falta de armazenamento/quota
+ */
+function isStorageQuotaError(
+  errorResponse: string,
+  statusCode: number
+): boolean {
+  const errorLower = errorResponse.toLowerCase();
+
+  // Códigos HTTP que podem indicar problemas de quota
+  if (statusCode === 403 || statusCode === 413 || statusCode === 507) {
+    return true;
+  }
+
+  // Palavras-chave que indicam problemas de armazenamento
+  const quotaKeywords = [
+    "quota",
+    "storage",
+    "limit",
+    "exceeded",
+    "insufficient",
+    "full",
+    "capacity",
+    "space",
+    "storage limit",
+    "quota exceeded",
+    "storage quota",
+    "no space",
+    "out of storage",
+  ];
+
+  return quotaKeywords.some((keyword) => errorLower.includes(keyword));
+}
+
+/**
+ * Verifica o status de armazenamento do Uploadthing antes de fazer uploads
+ * Faz uma requisição de teste para detectar problemas de quota antecipadamente
+ */
+async function checkStorageAvailability(apiKey: string): Promise<void> {
+  try {
+    // Faz uma requisição de teste com um arquivo mínimo (1 byte)
+    const testResponse = await fetch(
+      "https://api.uploadthing.com/v6/uploadFiles",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-uploadthing-api-key": apiKey,
+          "x-uploadthing-be-adapter": "express",
+          "x-uploadthing-version": "7.0.0",
+        },
+        body: JSON.stringify({
+          files: [
+            {
+              name: ".storage-check",
+              size: 1,
+              type: "text/plain",
+            },
+          ],
+          acl: "public-read",
+          contentDisposition: "inline",
+        }),
+      }
+    );
+
+    if (!testResponse.ok) {
+      const errorText = await testResponse.text();
+
+      if (isStorageQuotaError(errorText, testResponse.status)) {
+        throw new StorageQuotaExceededError(
+          `Armazenamento do Uploadthing sem espaço disponível. Status: ${testResponse.status}, Erro: ${errorText}`
+        );
+      }
+
+      // Outros erros não relacionados a quota são ignorados na verificação
+      // (podem ser problemas temporários, etc)
+      log(
+        `Aviso: Verificação de armazenamento retornou status ${testResponse.status}, mas não parece ser problema de quota`
+      );
+    }
+  } catch (error) {
+    if (error instanceof StorageQuotaExceededError) {
+      throw error;
+    }
+    // Erros de rede ou outros problemas não relacionados a quota são ignorados
+    // na verificação preventiva (serão detectados no upload real)
+    log(
+      `Aviso: Erro ao verificar armazenamento (não crítico): ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
+}
+
+/**
  * Decodifica o token do Uploadthing para extrair a API key
  * O token pode ser um JWT ou um Base64 string direto
  */
@@ -903,14 +1556,51 @@ async function uploadImages(imagePaths: string[]): Promise<string[]> {
     );
   }
 
+  // Verificar se já detectamos falta de armazenamento
+  if (storageQuotaExceeded) {
+    throw new StorageQuotaExceededError(
+      "Armazenamento do Uploadthing sem espaço disponível. Script interrompido."
+    );
+  }
+
+  // Carregar cache de uploads
+  const uploadCache = await loadImageUploadCache();
+
   // Decodifica o token para obter a API key real
   const { apiKey } = decodeUploadthingToken(CONFIG.UPLOADTHING_TOKEN);
+
+  // Verificar disponibilidade de armazenamento antes de iniciar uploads
+  await checkStorageAvailability(apiKey);
 
   const urls: string[] = [];
 
   for (const imagePath of imagePaths) {
-    const fileBuffer = await fs.readFile(imagePath);
+    // Verificar novamente antes de cada upload (pode ter mudado durante o processamento)
+    if (storageQuotaExceeded) {
+      throw new StorageQuotaExceededError(
+        "Armazenamento do Uploadthing sem espaço disponível. Script interrompido."
+      );
+    }
+
     const fileName = path.basename(imagePath);
+
+    // Calcular hash do arquivo para verificar se já foi enviado
+    const fileHash = await calculateFileHash(imagePath);
+
+    // Verificar se já existe no cache
+    if (uploadCache.entries[fileHash]) {
+      const cached = uploadCache.entries[fileHash];
+      log(
+        `Usando imagem do cache: ${fileName} -> ${
+          cached.url
+        } (hash: ${fileHash.substring(0, 8)}...)`
+      );
+      urls.push(cached.url);
+      continue;
+    }
+
+    // Arquivo não está no cache, fazer upload
+    const fileBuffer = await fs.readFile(imagePath);
     const mimeType = getMimeType(imagePath);
     const fileSize = fileBuffer.length;
 
@@ -943,6 +1633,15 @@ async function uploadImages(imagePaths: string[]): Promise<string[]> {
 
     if (!presignedResponse.ok) {
       const errorText = await presignedResponse.text();
+
+      // Verificar se é erro de quota/armazenamento
+      if (isStorageQuotaError(errorText, presignedResponse.status)) {
+        storageQuotaExceeded = true;
+        throw new StorageQuotaExceededError(
+          `Armazenamento do Uploadthing sem espaço disponível. Erro ao obter presigned URL para ${fileName}: ${errorText}`
+        );
+      }
+
       throw new Error(
         `Erro ao obter presigned URL para ${fileName}: ${errorText}`
       );
@@ -979,9 +1678,11 @@ async function uploadImages(imagePaths: string[]): Promise<string[]> {
     for (const [key, value] of Object.entries(fields)) {
       formData.append(key, value);
     }
+    // Converter Buffer para Uint8Array para compatibilidade com Blob
+    const uint8Array = new Uint8Array(fileBuffer);
     formData.append(
       "file",
-      new Blob([fileBuffer], { type: mimeType }),
+      new Blob([uint8Array], { type: mimeType }),
       fileName
     );
 
@@ -992,6 +1693,15 @@ async function uploadImages(imagePaths: string[]): Promise<string[]> {
 
     if (!uploadResponse.ok) {
       const errorText = await uploadResponse.text();
+
+      // Verificar se é erro de quota/armazenamento
+      if (isStorageQuotaError(errorText, uploadResponse.status)) {
+        storageQuotaExceeded = true;
+        throw new StorageQuotaExceededError(
+          `Armazenamento do Uploadthing sem espaço disponível. Erro ao fazer upload de ${fileName}: ${errorText}`
+        );
+      }
+
       throw new Error(`Erro ao fazer upload de ${fileName}: ${errorText}`);
     }
 
@@ -1002,9 +1712,24 @@ async function uploadImages(imagePaths: string[]): Promise<string[]> {
       fileData.fileUrl ||
       `https://utfs.io/f/${fileKey}`;
 
+    // Salvar no cache
+    uploadCache.entries[fileHash] = {
+      hash: fileHash,
+      url: finalUrl,
+      fileKey,
+      uploadedAt: new Date().toISOString(),
+      fileSize,
+      fileName,
+    };
+    uploadCache.urlToHash[finalUrl] = fileHash;
+
     urls.push(finalUrl);
     log(`Upload concluído: ${finalUrl}`);
   }
+
+  // Salvar cache atualizado
+  uploadCache.lastUpdated = new Date().toISOString();
+  await saveImageUploadCache(uploadCache);
 
   return urls;
 }
@@ -1025,28 +1750,252 @@ function getMimeType(filePath: string): string {
 // CATEGORIAS
 // ============================================================================
 
+/**
+ * Verifica se existe uma categoria similar usando IA (com cache)
+ */
+async function findSimilarCategory(
+  name: string,
+  parentId: number | undefined,
+  similarityCache: CategorySimilarityCacheFile,
+  refreshCache: boolean = false
+): Promise<{ id: number; name: string } | null> {
+  const cacheKey = getSimilarityCacheKey(name, parentId);
+
+  // Verificar cache primeiro
+  if (!refreshCache && similarityCache.entries[cacheKey]) {
+    const cached = similarityCache.entries[cacheKey];
+    log(
+      `Cache de similaridade encontrado: "${name}" → "${cached.matchedCategoryName}" (ID: ${cached.matchedCategoryId})`
+    );
+
+    // Verificar se a categoria ainda existe no banco
+    const category = await prisma.category.findUnique({
+      where: { id: cached.matchedCategoryId },
+    });
+
+    if (category && !category.isDeleted) {
+      return { id: category.id, name: category.name };
+    } else {
+      // Categoria foi deletada, remover do cache
+      delete similarityCache.entries[cacheKey];
+      log(`Categoria do cache foi deletada, removendo entrada: ${cacheKey}`);
+    }
+  }
+
+  // Buscar todas as categorias do mesmo nível (mesmo parentId)
+  const existingCategories = await prisma.category.findMany({
+    where: {
+      storeId: CONFIG.STORE_ID,
+      parentId: parentId ?? null,
+      isDeleted: false,
+    },
+    select: { id: true, name: true },
+  });
+
+  if (existingCategories.length === 0) {
+    log(
+      `Nenhuma categoria existente no nível ${parentId ?? "raiz"} para comparar`
+    );
+    return null;
+  }
+
+  // Se houver apenas uma categoria, fazer comparação simples primeiro
+  if (existingCategories.length === 1) {
+    const existing = existingCategories[0];
+    const normalizedNew = name.toLowerCase().trim();
+    const normalizedExisting = existing.name.toLowerCase().trim();
+
+    // Comparação simples: se os nomes normalizados forem muito similares
+    if (normalizedNew === normalizedExisting) {
+      log(`Categoria exata encontrada: "${name}" = "${existing.name}"`);
+      similarityCache.entries[cacheKey] = {
+        newName: name,
+        parentId,
+        matchedCategoryId: existing.id,
+        matchedCategoryName: existing.name,
+        checkedAt: new Date().toISOString(),
+      };
+      return { id: existing.id, name: existing.name };
+    }
+  }
+
+  // Usar IA para verificar similaridade semântica
+  const categoryNames = existingCategories.map((c) => c.name).join(", ");
+
+  const prompt = `Você é um assistente que verifica se nomes de categorias são similares ou equivalentes.
+
+NOVA CATEGORIA: "${name}"
+CATEGORIAS EXISTENTES: ${categoryNames}
+
+INSTRUÇÕES:
+- Verifique se a nova categoria é similar ou equivalente a alguma existente
+- Considere variações: singular/plural, acentos, sinônimos, abreviações
+- Exemplos: "Aneis" = "Anéis", "Brincos" = "Brinco", "Colares" = "Colar", "Acessorios" = "Acessórios"
+- Retorne APENAS o nome EXATO da categoria existente mais similar (copie exatamente como está na lista)
+- Se nenhuma for similar, retorne "null"
+
+Resposta (apenas o nome exato ou "null"):`;
+
+  try {
+    log(`Verificando similaridade com IA para: "${name}"`);
+
+    const response = await retryWithBackoff(
+      async () => {
+        const res = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${CONFIG.OPENAI_API_KEY}`,
+          },
+          body: JSON.stringify({
+            model: CONFIG.OPENAI_MODEL,
+            messages: [{ role: "user", content: prompt }],
+            max_tokens: 100,
+            temperature: 0.3,
+          }),
+        });
+
+        if (!res.ok) {
+          const error = (await res.json()) as {
+            error?: { message?: string };
+          };
+          throw new Error(
+            `OpenAI API error: ${error.error?.message || res.statusText}`
+          );
+        }
+
+        return res;
+      },
+      3,
+      1000
+    );
+
+    const data = (await response.json()) as {
+      choices?: Array<{ message?: { content?: string } }>;
+    };
+    const similarName = data.choices?.[0]?.message?.content?.trim();
+
+    if (similarName && similarName.toLowerCase() !== "null") {
+      // Buscar categoria com nome exato (case-insensitive)
+      const found = existingCategories.find(
+        (c) => c.name.toLowerCase() === similarName.toLowerCase()
+      );
+
+      if (found) {
+        log(
+          `✅ Categoria similar encontrada via IA: "${name}" → "${found.name}" (ID: ${found.id})`
+        );
+
+        // Salvar no cache
+        similarityCache.entries[cacheKey] = {
+          newName: name,
+          parentId,
+          matchedCategoryId: found.id,
+          matchedCategoryName: found.name,
+          checkedAt: new Date().toISOString(),
+        };
+
+        return { id: found.id, name: found.name };
+      } else {
+        log(
+          `⚠️ IA retornou "${similarName}" mas não foi encontrada nas categorias existentes`
+        );
+      }
+    } else {
+      log(`Nenhuma categoria similar encontrada para: "${name}"`);
+    }
+  } catch (error) {
+    logError("Erro ao verificar categoria similar com IA", error);
+    // Em caso de erro, continuar sem verificação (comportamento atual)
+  }
+
+  return null;
+}
+
 async function getOrCreateCategory(
   name: string,
-  parentId?: number,
-  cache?: CategoryCacheFile,
+  parentId: number | undefined,
+  cache: CategoryCacheFile | undefined,
+  similarityCache: CategorySimilarityCacheFile,
   refreshCache: boolean = false
-): Promise<{ id: number; cache: CategoryCacheFile }> {
-  const slug = name
+): Promise<{
+  id: number;
+  cache: CategoryCacheFile;
+  similarityCache: CategorySimilarityCacheFile;
+}> {
+  // Validação: nome da categoria não pode ser vazio
+  const trimmedName = name.trim();
+  if (!trimmedName || trimmedName.length === 0) {
+    throw new Error("Nome da categoria não pode ser vazio");
+  }
+
+  // Validação: nome da categoria não pode ser muito longo (limite de 100 caracteres)
+  if (trimmedName.length > 100) {
+    throw new Error(
+      `Nome da categoria muito longo (${trimmedName.length} caracteres, máximo: 100)`
+    );
+  }
+
+  const slug = trimmedName
     .toLowerCase()
     .replace(/\s+/g, "-")
     .replace(/[^\w-]/g, "");
+
+  // Validação: slug não pode ser vazio após processamento
+  if (!slug || slug.length === 0) {
+    throw new Error(
+      `Não foi possível gerar slug válido para categoria: ${trimmedName}`
+    );
+  }
+
   let categoryCache = cache || (await loadCategoryCache());
 
   if (!refreshCache && categoryCache.entries[slug]) {
-    return { id: categoryCache.entries[slug].id, cache: categoryCache };
+    return {
+      id: categoryCache.entries[slug].id,
+      cache: categoryCache,
+      similarityCache,
+    };
   }
 
+  // Verificar por slug exato primeiro
   let category = await prisma.category.findUnique({ where: { slug } });
 
+  // Se não encontrou, verificar por similaridade com IA (com cache)
+  if (!category) {
+    const similar = await findSimilarCategory(
+      trimmedName,
+      parentId,
+      similarityCache,
+      refreshCache
+    );
+    if (similar) {
+      category = await prisma.category.findUnique({
+        where: { id: similar.id },
+      });
+      if (category) {
+        log(
+          `✅ Usando categoria similar existente: "${trimmedName}" → "${category.name}" (ID: ${category.id})`
+        );
+        // Atualizar o slug no cache para futuras buscas
+        const matchedSlug = category.slug;
+        categoryCache.entries[matchedSlug] = {
+          id: category.id,
+          name: category.name,
+          slug: category.slug,
+          storeId: category.storeId,
+          parentId: category.parentId ?? undefined,
+          createdAt: new Date().toISOString(),
+        };
+      }
+    }
+  }
+
+  // Criar nova categoria apenas se não encontrou nenhuma similar
   if (!category) {
     category = await prisma.category.create({
       data: {
-        name,
+        name: trimmedName,
         slug,
         storeId: CONFIG.STORE_ID,
         cashbackValue: 0,
@@ -1057,16 +2006,16 @@ async function getOrCreateCategory(
     });
     if (parentId) {
       log(
-        `Subcategoria criada: ${name} (ID: ${category.id}, parentId: ${parentId})`
+        `Subcategoria criada: ${trimmedName} (ID: ${category.id}, parentId: ${parentId})`
       );
     } else {
-      log(`Categoria pai criada: ${name} (ID: ${category.id})`);
+      log(`Categoria pai criada: ${trimmedName} (ID: ${category.id})`);
     }
   } else {
     if (parentId) {
-      log(`Subcategoria encontrada: ${name} (ID: ${category.id})`);
+      log(`Subcategoria encontrada: ${trimmedName} (ID: ${category.id})`);
     } else {
-      log(`Categoria pai encontrada: ${name} (ID: ${category.id})`);
+      log(`Categoria pai encontrada: ${trimmedName} (ID: ${category.id})`);
     }
   }
 
@@ -1079,7 +2028,7 @@ async function getOrCreateCategory(
     createdAt: new Date().toISOString(),
   };
 
-  return { id: category.id, cache: categoryCache };
+  return { id: category.id, cache: categoryCache, similarityCache };
 }
 
 // ============================================================================
@@ -1093,6 +2042,50 @@ async function createProduct(
   descriptions: { short: string; long: string },
   force: boolean = false
 ): Promise<number> {
+  // Validações de entrada
+  if (!data.code || data.code.trim().length === 0) {
+    throw new Error("Código do produto não pode ser vazio");
+  }
+
+  if (!data.name || data.name.trim().length === 0) {
+    throw new Error("Nome do produto não pode ser vazio");
+  }
+
+  if (!data.barcode || data.barcode.trim().length === 0) {
+    throw new Error("Barcode do produto não pode ser vazio");
+  }
+
+  if (!data.price || data.price <= 0) {
+    throw new Error(
+      `Preço do produto deve ser maior que zero (recebido: ${data.price})`
+    );
+  }
+
+  if (!imageUrls || imageUrls.length === 0) {
+    throw new Error("Produto deve ter pelo menos uma imagem");
+  }
+
+  if (!descriptions.short || descriptions.short.trim().length === 0) {
+    throw new Error("Descrição curta não pode ser vazia");
+  }
+
+  if (!descriptions.long || descriptions.long.trim().length === 0) {
+    throw new Error("Descrição longa não pode ser vazia");
+  }
+
+  // Validação: verificar se categoria existe
+  const category = await prisma.category.findFirst({
+    where: {
+      id: categoryId,
+      isDeleted: false,
+    },
+  });
+  if (!category) {
+    throw new Error(
+      `Categoria com ID ${categoryId} não encontrada ou deletada`
+    );
+  }
+
   const sku = `HLN-${data.code}`;
 
   if (force) {
@@ -1108,6 +2101,14 @@ async function createProduct(
     .toLowerCase()
     .replace(/\s+/g, "-")
     .replace(/[^\w-]/g, "");
+
+  // Validação: slug não pode ser vazio
+  if (!slug || slug.length === 0) {
+    throw new Error(
+      `Não foi possível gerar slug válido para produto: ${data.name}`
+    );
+  }
+
   let uniqueSlug = slug;
   let counter = 1;
 
@@ -1118,6 +2119,13 @@ async function createProduct(
     if (!existing) break;
     uniqueSlug = `${slug}-${counter}`;
     counter++;
+
+    // Proteção contra loop infinito (máximo 1000 tentativas)
+    if (counter > 1000) {
+      throw new Error(
+        `Não foi possível gerar slug único após 1000 tentativas para: ${data.name}`
+      );
+    }
   }
 
   const product = await prisma.product.create({
@@ -1265,6 +2273,31 @@ async function main(): Promise<void> {
     await prisma.$connect();
     log("Conectado ao banco de dados");
 
+    // Construir cache inicial de imagens se solicitado
+    if (args.buildImageCache) {
+      console.log("\nConstruindo cache inicial de imagens...");
+      await buildImageCacheFromDatabase();
+      console.log("Cache de imagens construído com sucesso!\n");
+      if (!args.cleanupOrphans) {
+        // Se só quer construir cache, sair aqui
+        await prisma.$disconnect();
+        process.exit(0);
+      }
+    }
+
+    // Limpar arquivos órfãos se solicitado
+    if (args.cleanupOrphans) {
+      console.log("\nLimpando arquivos órfãos do Uploadthing...");
+      await cleanupOrphanedFiles(args.dryRun);
+      console.log("Limpeza concluída!\n");
+    }
+
+    // Se apenas buildImageCache ou cleanupOrphans foram executados, sair
+    if ((args.buildImageCache || args.cleanupOrphans) && !inputFolder) {
+      await prisma.$disconnect();
+      process.exit(0);
+    }
+
     // Carregar dados CSV
     console.log("\nCarregando CSVs...");
     const csvData = await loadCSVData(CONFIG.CSV_FOLDER);
@@ -1273,13 +2306,23 @@ async function main(): Promise<void> {
     // Carregar caches
     let cache = await loadDescriptionCache();
     let categoryCache = await loadCategoryCache();
+    let similarityCache = await loadSimilarityCache();
+    const uploadCache = await loadImageUploadCache();
     console.log(
       `Cache de descricoes: ${Object.keys(cache.entries).length} entradas`
     );
     console.log(
       `Cache de categorias: ${
         Object.keys(categoryCache.entries).length
-      } entradas\n`
+      } entradas`
+    );
+    console.log(
+      `Cache de similaridades: ${
+        Object.keys(similarityCache.entries).length
+      } entradas`
+    );
+    console.log(
+      `Cache de uploads: ${Object.keys(uploadCache.entries).length} entradas\n`
     );
 
     // Escanear pastas
@@ -1299,6 +2342,13 @@ async function main(): Promise<void> {
 
     // Processar cada categoria
     for (const catInfo of categoryFolders) {
+      // Verificar se armazenamento foi excedido antes de processar nova categoria
+      if (storageQuotaExceeded) {
+        console.log("\n⚠️  ARMAZENAMENTO DO UPLOADTHING SEM ESPAÇO DISPONÍVEL");
+        console.log("   Interrompendo processamento de novas categorias.\n");
+        break;
+      }
+
       if (limit && processedProducts >= limit) break;
 
       console.log(
@@ -1313,17 +2363,21 @@ async function main(): Promise<void> {
         catInfo.category,
         undefined,
         categoryCache,
+        similarityCache,
         args.refreshCache
       );
       categoryCache = parentResult.cache;
+      similarityCache = parentResult.similarityCache;
 
       const subcategoryResult = await getOrCreateCategory(
         catInfo.subcategory,
         parentResult.id,
         categoryCache,
+        similarityCache,
         args.refreshCache
       );
       categoryCache = subcategoryResult.cache;
+      similarityCache = subcategoryResult.similarityCache;
 
       // Preparar lista de produtos válidos para processamento
       const validProducts: Array<{
@@ -1334,7 +2388,22 @@ async function main(): Promise<void> {
 
       for (const prodFolder of productFolders) {
         totalProducts++;
-        const code = prodFolder.code;
+        const code = prodFolder.code.trim();
+
+        // Validação: código não pode ser vazio
+        if (!code || code.length === 0) {
+          console.log(`   [SKIP] Código vazio na pasta: ${prodFolder.path}`);
+          skippedProducts++;
+          continue;
+        }
+
+        // Validação: código deve ser alfanumérico (permite hífen e underscore)
+        if (!/^[a-zA-Z0-9_-]+$/.test(code)) {
+          console.log(`   [SKIP] ${code}: código contém caracteres inválidos`);
+          skippedProducts++;
+          continue;
+        }
+
         const barcode = code;
 
         // Verificar se já existe
@@ -1353,11 +2422,45 @@ async function main(): Promise<void> {
           continue;
         }
 
+        // Validação: descrição não pode ser vazia
+        if (!csv.Descrição || csv.Descrição.trim().length === 0) {
+          console.log(`   [SKIP] ${code}: descrição vazia no CSV`);
+          skippedProducts++;
+          continue;
+        }
+
+        // Validação: preço deve existir e ser válido
+        if (!csv.Preço || csv.Preço.trim().length === 0) {
+          console.log(`   [SKIP] ${code}: preço não informado no CSV`);
+          skippedProducts++;
+          continue;
+        }
+
         // Parse do preço
-        const priceStr = csv.Preço.replace(",", ".");
+        const priceStr = csv.Preço.replace(",", ".").trim();
         const price = parseFloat(priceStr);
+
+        // Validação: preço deve ser um número válido
         if (isNaN(price)) {
-          console.log(`   [SKIP] ${code}: preco invalido`);
+          console.log(`   [SKIP] ${code}: preco invalido (${csv.Preço})`);
+          skippedProducts++;
+          continue;
+        }
+
+        // Validação: preço deve ser positivo
+        if (price <= 0) {
+          console.log(
+            `   [SKIP] ${code}: preco deve ser maior que zero (${price})`
+          );
+          skippedProducts++;
+          continue;
+        }
+
+        // Validação: preço não pode ser muito alto (proteção contra erros)
+        if (price > 1000000) {
+          console.log(
+            `   [SKIP] ${code}: preco muito alto (${price}), possível erro`
+          );
           skippedProducts++;
           continue;
         }
@@ -1373,13 +2476,86 @@ async function main(): Promise<void> {
           continue;
         }
 
-        // Ordenar imagens com a principal primeiro
-        const images = sortImagesWithMainFirst(rawImages);
+        // Validação: verificar se os arquivos de imagem realmente existem e são válidos
+        const validImages: string[] = [];
+        for (const imgPath of rawImages) {
+          try {
+            const stats = await fs.stat(imgPath);
+            // Validação: arquivo deve existir e não ser vazio
+            if (!stats.isFile()) {
+              console.log(
+                `   [WARN] ${code}: ${path.basename(
+                  imgPath
+                )} não é um arquivo válido`
+              );
+              continue;
+            }
+            // Validação: arquivo deve ter tamanho mínimo (1KB)
+            if (stats.size < 1024) {
+              console.log(
+                `   [WARN] ${code}: ${path.basename(imgPath)} muito pequeno (${
+                  stats.size
+                } bytes), possível arquivo corrompido`
+              );
+              continue;
+            }
+            // Validação: arquivo não deve ser muito grande (50MB)
+            if (stats.size > 50 * 1024 * 1024) {
+              console.log(
+                `   [WARN] ${code}: ${path.basename(imgPath)} muito grande (${(
+                  stats.size /
+                  1024 /
+                  1024
+                ).toFixed(2)}MB), pulando`
+              );
+              continue;
+            }
+            validImages.push(imgPath);
+          } catch (error) {
+            console.log(
+              `   [WARN] ${code}: erro ao verificar ${path.basename(
+                imgPath
+              )}: ${error instanceof Error ? error.message : String(error)}`
+            );
+            continue;
+          }
+        }
+
+        if (validImages.length === 0) {
+          console.log(
+            `   [SKIP] ${code}: nenhuma imagem válida após validação`
+          );
+          skippedProducts++;
+          continue;
+        }
+
+        // Ordenar imagens com a principal primeiro (passando o código do produto)
+        const images = sortImagesWithMainFirst(validImages, code);
 
         // Preparar dados do produto
+        const productName = capitalizeWords(csv.Descrição).trim();
+
+        // Validação: nome do produto não pode ser vazio após processamento
+        if (!productName || productName.length === 0) {
+          console.log(
+            `   [SKIP] ${code}: nome do produto vazio após processamento`
+          );
+          skippedProducts++;
+          continue;
+        }
+
+        // Validação: nome do produto não pode ser muito longo (limite de 200 caracteres)
+        if (productName.length > 200) {
+          console.log(
+            `   [SKIP] ${code}: nome do produto muito longo (${productName.length} caracteres)`
+          );
+          skippedProducts++;
+          continue;
+        }
+
         const productData: ProductData = {
           code,
-          name: capitalizeWords(csv.Descrição),
+          name: productName,
           barcode,
           price,
           category: catInfo.category,
@@ -1414,6 +2590,15 @@ async function main(): Promise<void> {
           } produtos...`
         );
 
+        // Verificar se armazenamento foi excedido antes de processar batch
+        if (storageQuotaExceeded) {
+          console.log(
+            "\n   ⚠️  ARMAZENAMENTO DO UPLOADTHING SEM ESPAÇO DISPONÍVEL"
+          );
+          console.log("   Script interrompido para evitar mais falhas.\n");
+          break;
+        }
+
         // Função para processar um único produto
         const processProduct = async (
           item: (typeof batch)[0]
@@ -1426,6 +2611,16 @@ async function main(): Promise<void> {
           const { code, productData, images } = item;
 
           try {
+            // Verificar novamente antes de processar
+            if (storageQuotaExceeded) {
+              return {
+                success: false,
+                code,
+                name: productData.name,
+                error: "Armazenamento sem espaço (detectado anteriormente)",
+              };
+            }
+
             // Gerar descrições (com análise de imagem)
             const shouldRefresh =
               args.refreshCache &&
@@ -1487,6 +2682,23 @@ async function main(): Promise<void> {
           } catch (error) {
             const errorMsg =
               error instanceof Error ? error.message : String(error);
+
+            // Se for erro de quota, marcar flag global e propagar
+            if (error instanceof StorageQuotaExceededError) {
+              storageQuotaExceeded = true;
+              logError(
+                `Armazenamento sem espaço detectado ao processar produto ${code}`,
+                error
+              );
+              console.log(`   [QUOTA] ${code}: Armazenamento sem espaço!`);
+              return {
+                success: false,
+                code,
+                name: productData.name,
+                error: errorMsg,
+              };
+            }
+
             logError(`Erro ao processar produto ${code}`, error);
             console.log(`   [ERRO] ${code}: ${errorMsg.substring(0, 60)}...`);
             return {
@@ -1510,6 +2722,16 @@ async function main(): Promise<void> {
               result.value.error &&
               result.value.error !== "Ignorado pelo usuário"
             ) {
+              // Verificar se o erro indica falta de armazenamento
+              const isQuotaError =
+                result.value.error.toLowerCase().includes("armazenamento") ||
+                result.value.error.toLowerCase().includes("quota") ||
+                result.value.error.toLowerCase().includes("storage");
+
+              if (isQuotaError) {
+                storageQuotaExceeded = true;
+              }
+
               failedProducts.push({
                 code: result.value.code,
                 name: result.value.name,
@@ -1519,13 +2741,34 @@ async function main(): Promise<void> {
             }
           } else {
             // Promise rejeitada (não deveria acontecer pois tratamos erros internamente)
+            const errorMsg = result.reason?.message || String(result.reason);
+            const isQuotaError =
+              errorMsg.toLowerCase().includes("armazenamento") ||
+              errorMsg.toLowerCase().includes("quota") ||
+              errorMsg.toLowerCase().includes("storage");
+
+            if (isQuotaError) {
+              storageQuotaExceeded = true;
+            }
+
             failedProducts.push({
               code: "unknown",
               name: "unknown",
-              error: result.reason?.message || String(result.reason),
+              error: errorMsg,
               timestamp: new Date().toISOString(),
             });
           }
+        }
+
+        // Verificar se armazenamento foi excedido após processar batch
+        if (storageQuotaExceeded) {
+          console.log(
+            "\n   ⚠️  ARMAZENAMENTO DO UPLOADTHING SEM ESPAÇO DISPONÍVEL"
+          );
+          console.log(
+            "   Interrompendo processamento para evitar mais falhas.\n"
+          );
+          break;
         }
 
         // Verificar limite após cada batch
@@ -1551,6 +2794,14 @@ async function main(): Promise<void> {
 
       categoryCache.lastUpdated = new Date().toISOString();
       await saveCategoryCache(categoryCache);
+
+      similarityCache.lastUpdated = new Date().toISOString();
+      await saveSimilarityCache(similarityCache);
+
+      // Cache de uploads já é salvo dentro de uploadImages, mas garantimos que está atualizado
+      const finalUploadCache = await loadImageUploadCache();
+      finalUploadCache.lastUpdated = new Date().toISOString();
+      await saveImageUploadCache(finalUploadCache);
     }
 
     // Resumo
@@ -1563,6 +2814,12 @@ async function main(): Promise<void> {
     console.log(`Produtos pulados:      ${skippedProducts}`);
     console.log(`Produtos com erro:     ${failedProducts.length}`);
     console.log(`Tempo total:           ${duration}s`);
+    if (storageQuotaExceeded) {
+      console.log(
+        `\n⚠️  ATENÇÃO: Script interrompido por falta de armazenamento no Uploadthing`
+      );
+      console.log(`   Verifique sua conta e libere espaço antes de continuar.`);
+    }
     console.log("=".repeat(60));
 
     // Relatório de falhas
