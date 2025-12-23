@@ -12,6 +12,15 @@ gen-images/input/*
 gen-images/output/*
 gen-images/processing-cache.json
 gen-images/logs/*
-gen-images/logs/*
 gen-images/pending/*
 gen-images/cache-backups/*
+rename-images/image-hash-cache.json
+rename-images/input/*
+rename-images/output/*
+product-importer/data/input/*
+product-importer/data/table/*
+product-importer/data/output/*
+product-importer/data/cache/*
+product-importer/data/logs/*
+product-importer/data/cache-backups/*
+product-importer/data/processing-cache.json

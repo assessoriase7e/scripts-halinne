@@ -5,13 +5,12 @@
   "type": "module",
   "main": "match-images/match-images.js",
   "scripts": {
-    "match": "tsc && node dist/match-images/match-images.js",
-    "rename": "tsc && node dist/rename-images/rename-images.js",
-    "match-move": "tsc && node dist/rename-images/match-and-move.js",
-    "simple-move": "tsc && node dist/rename-images/simple-move.js",
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "add-js-ext": "ts-node add-js-extensions.ts"
+    "add-js-ext": "ts-node add-js-extensions.ts",
+    "find-duplicates-input": "tsc && node dist/rename-images/find-duplicates-input.js",
+    "categorize-images": "tsc && node dist/rename-images/categorize-images.js",
+    "categorize-images:clear": "tsc && node dist/rename-images/categorize-images.js --clear-cache"
   },
   "keywords": [
     "image",
