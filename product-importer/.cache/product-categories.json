@@ -1,104 +1,105 @@
 {
   "version": "1.0",
-  "lastUpdated": "2025-12-17T02:35:58.836Z",
+  "lastUpdated": "2025-12-22T23:54:42.075Z",
   "entries": {
-    "aneis": {
-      "id": 1,
-      "name": "Aneis",
-      "slug": "aneis",
+    "acessorios": {
+      "id": 17,
+      "name": "Acessorios",
+      "slug": "acessorios",
       "storeId": 1,
-      "createdAt": "2025-12-16T21:16:25.480Z"
+      "createdAt": "2025-12-22T23:53:34.947Z"
+    },
+    "aneis": {
+      "id": 17,
+      "name": "Acessorios",
+      "slug": "acessorios",
+      "storeId": 1,
+      "createdAt": "2025-12-22T22:45:26.433Z"
     },
     "aneis-ouro": {
-      "id": 4,
-      "name": "aneis-ouro",
+      "id": 18,
+      "name": "Aneis Ouro",
       "slug": "aneis-ouro",
       "storeId": 1,
-      "parentId": 1,
-      "createdAt": "2025-12-16T21:16:25.616Z"
+      "parentId": 17,
+      "createdAt": "2025-12-22T22:49:07.033Z"
+    },
+    "aneis-prata-rodio": {
+      "id": 18,
+      "name": "Aneis Ouro",
+      "slug": "aneis-ouro",
+      "storeId": 1,
+      "parentId": 17,
+      "createdAt": "2025-12-22T22:49:07.034Z"
+    },
+    "braceletes": {
+      "id": 17,
+      "name": "Acessorios",
+      "slug": "acessorios",
+      "storeId": 1,
+      "createdAt": "2025-12-22T22:59:30.774Z"
+    },
+    "braceletes-ouro": {
+      "id": 20,
+      "name": "Braceletes Ouro",
+      "slug": "braceletes-ouro",
+      "storeId": 1,
+      "parentId": 17,
+      "createdAt": "2025-12-22T22:59:31.202Z"
+    },
+    "braceletes-prata": {
+      "id": 21,
+      "name": "Braceletes Prata",
+      "slug": "braceletes-prata",
+      "storeId": 1,
+      "parentId": 17,
+      "createdAt": "2025-12-22T23:00:47.722Z"
     },
     "brincos": {
-      "id": 5,
+      "id": 22,
       "name": "Brincos",
       "slug": "brincos",
       "storeId": 1,
-      "createdAt": "2025-12-17T02:08:52.603Z"
+      "createdAt": "2025-12-22T23:01:02.468Z"
     },
     "brincos-ouro": {
-      "id": 6,
+      "id": 23,
       "name": "Brincos Ouro",
       "slug": "brincos-ouro",
       "storeId": 1,
-      "parentId": 5,
-      "createdAt": "2025-12-17T02:08:52.743Z"
+      "parentId": 22,
+      "createdAt": "2025-12-22T23:29:06.329Z"
+    },
+    "brincos-prata-rodio": {
+      "id": 23,
+      "name": "Brincos Ouro",
+      "slug": "brincos-ouro",
+      "storeId": 1,
+      "parentId": 22,
+      "createdAt": "2025-12-22T23:29:06.329Z"
     },
     "colares": {
-      "id": 7,
-      "name": "Colares",
-      "slug": "colares",
+      "id": 17,
+      "name": "Acessorios",
+      "slug": "acessorios",
       "storeId": 1,
-      "createdAt": "2025-12-17T02:21:42.331Z"
+      "createdAt": "2025-12-22T23:53:34.947Z"
+    },
+    "colares-aco": {
+      "id": 24,
+      "name": "Colares Aco",
+      "slug": "colares-aco",
+      "storeId": 1,
+      "parentId": 17,
+      "createdAt": "2025-12-22T23:53:35.740Z"
     },
     "colares-ouro": {
-      "id": 8,
+      "id": 25,
       "name": "Colares Ouro",
       "slug": "colares-ouro",
       "storeId": 1,
-      "parentId": 7,
-      "createdAt": "2025-12-17T02:21:42.611Z"
-    },
-    "conjuntos": {
-      "id": 9,
-      "name": "Conjuntos",
-      "slug": "conjuntos",
-      "storeId": 1,
-      "createdAt": "2025-12-17T02:27:18.647Z"
-    },
-    "colares-e-brincos-ouro": {
-      "id": 10,
-      "name": "Colares E Brincos Ouro",
-      "slug": "colares-e-brincos-ouro",
-      "storeId": 1,
-      "parentId": 9,
-      "createdAt": "2025-12-17T02:27:18.931Z"
-    },
-    "colares-e-brincos-prata": {
-      "id": 11,
-      "name": "Colares E Brincos Prata",
-      "slug": "colares-e-brincos-prata",
-      "storeId": 1,
-      "parentId": 9,
-      "createdAt": "2025-12-17T02:29:41.229Z"
-    },
-    "pulseiras": {
-      "id": 12,
-      "name": "Pulseiras",
-      "slug": "pulseiras",
-      "storeId": 1,
-      "createdAt": "2025-12-17T02:30:12.018Z"
-    },
-    "pulseiras-ouro": {
-      "id": 13,
-      "name": "Pulseiras Ouro",
-      "slug": "pulseiras-ouro",
-      "storeId": 1,
-      "parentId": 12,
-      "createdAt": "2025-12-17T02:30:12.297Z"
-    },
-    "tornozeleiras": {
-      "id": 14,
-      "name": "Tornozeleiras",
-      "slug": "tornozeleiras",
-      "storeId": 1,
-      "createdAt": "2025-12-17T02:35:38.716Z"
-    },
-    "tornozeleiras-ouro": {
-      "id": 15,
-      "name": "Tornozeleiras Ouro",
-      "slug": "tornozeleiras-ouro",
-      "storeId": 1,
-      "parentId": 14,
-      "createdAt": "2025-12-17T02:35:38.997Z"
+      "parentId": 17,
+      "createdAt": "2025-12-22T23:53:58.030Z"
     }
   }
 }
